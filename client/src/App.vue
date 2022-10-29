@@ -5,13 +5,13 @@
   <Pot :amount="0" :cards="['10', 'J', 'Q', '9']" />
   <hr />
   <Cards :cards="['Q', 'J']" />
-  <Raise :min="500" :max="6000" />
+  <Raise :min="500" :max="balance" />
 
-  <PlayerAmount :amount="10000" />
+  <PlayerAmount :amount="balance" />
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 import Raise from './components/Raise.vue';
 import PlayerAmount from './components/PlayerAmount.vue';
@@ -24,6 +24,13 @@ export default defineComponent({
     PlayerAmount,
     Cards,
     Pot,
+  },
+  setup() {
+    const balance = ref(6000);
+
+    return {
+      balance,
+    };
   },
 });
 

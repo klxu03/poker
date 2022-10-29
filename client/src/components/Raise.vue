@@ -2,6 +2,9 @@
   <button type="button">Check</button>
   <button type="button">Fold</button>
 
+  <!-- TODO: -->
+  <!-- Add a way to directly input how much to raise -->
+
   <div class="slider-container">
     <input
       type="range"
