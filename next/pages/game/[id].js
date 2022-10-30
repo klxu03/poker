@@ -1,5 +1,5 @@
-import styles from '../../styles/Home.module.css';
 import gameStyles from '../../styles/Game.module.css';
+import cardStyles from '../../styles/Card.module.css';
 
 const Game = () => {
   const players = [
@@ -38,10 +38,16 @@ const Game = () => {
 
   let turn = 'leon';
 
+  let table = ['A♠ ', '7♥ ', 'J♣ ', '3♦ '];
+  let pot = 200;
+
+  let hand = ['A♥ ', 'A♣ '];
+  let bal = 1000;
+
   return (
     <>
-      <div className={styles.container}>
-        <main className={styles.main}>
+      <div className={gameStyles.container}>
+        <main className={gameStyles.main}>
           <h1>Players:</h1>
 
           <div className={gameStyles.grid}>
@@ -49,7 +55,7 @@ const Game = () => {
               <>
                 <a
                   key={player.username}
-                  className={`${gameStyles.card} custom-card`}
+                  className={`${gameStyles.card} custom-player-card`}
                 >
                   <h2>Player {player.username}</h2>
                   <h3>Balance: {player.bal}</h3>
@@ -62,7 +68,7 @@ const Game = () => {
 
                 <style jsx>
                   {`
-                    .custom-card {
+                    .custom-player-card {
                       color: ${colors[player.action]};
                       border-color: ${colors[player.action]};
                       border-width: ${turn == player.username ? '5px' : '1px'};
@@ -72,6 +78,62 @@ const Game = () => {
               </>
             ))}
           </div>
+
+          <div className={cardStyles.grid}>
+            {table.map((card) => (
+              <>
+                <div className={`${cardStyles.card} custom-card`}>
+                  <p>{card}</p>
+                </div>
+
+                <style jsx>
+                  {`
+                    .custom-card {
+                      color: ${card[1] == '♦' || card[1] == '♥'
+                        ? 'red'
+                        : 'black'};
+                      border-color: ${card[1] == '♦' || card[1] == '♥'
+                        ? 'red'
+                        : 'black'};
+                    }
+                  `}
+                </style>
+              </>
+            ))}
+          </div>
+          <h2>Total Pot Size: {pot}</h2>
+
+          <div className={cardStyles.grid}>
+            {hand.map((card) => (
+              <>
+                <div className={`${cardStyles.card} custom-card`}>
+                  <p>{card}</p>
+                </div>
+
+                <style jsx>
+                  {`
+                    .custom-card {
+                      color: ${card[1] == '♦' || card[1] == '♥'
+                        ? 'red'
+                        : 'black'};
+                      border-color: ${card[1] == '♦' || card[1] == '♥'
+                        ? 'red'
+                        : 'black'};
+                    }
+                  `}
+                </style>
+              </>
+            ))}
+          </div>
+          <div>
+            <button>Call</button>
+            <button>Fold</button>
+            <button>Raise</button>
+            <input type="text"></input>
+
+            <br />
+          </div>
+          <h2>Your Chip Bal: {bal}</h2>
         </main>
       </div>
     </>
