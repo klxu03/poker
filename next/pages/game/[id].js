@@ -1,33 +1,20 @@
 import gameStyles from '../../styles/Game.module.css';
 import cardStyles from '../../styles/Card.module.css';
 
+import io from 'socket.io-client';
+import { useState, useEffect } from 'react';
+
+// Global socket variable
+let socket;
+
 const Game = () => {
-  const players = [
-    {
-      username: 'jeff',
-      bal: 10_000,
-      action: 'Fold',
-      amt: '0',
-    },
-    {
-      username: 'elon',
-      bal: 15_000,
-      action: 'Check',
-      amt: '100',
-    },
-    {
-      username: 'leon',
-      bal: 200,
-      action: 'Call',
-      amt: '0',
-    },
-    {
-      username: 'kev',
-      bal: 1_000,
-      action: 'Raise',
-      amt: '100',
-    },
-  ];
+  const [players, setPlayers] = useState([]);
+  const [turn, setTurn] = useState('');
+  const [table, setTable] = useState([]);
+  const [pot, setPot] = useState();
+
+  const [hand, setHand] = useState([]);
+  const [bal, setBal] = useState();
 
   const colors = {
     Fold: 'red',
@@ -36,13 +23,44 @@ const Game = () => {
     Raise: 'green',
   };
 
-  let turn = 'leon';
+  // Request to initialize the socket client-side
+  const socketInitializer = async () => {
+    // Call the server to initialize in case it's not initialized
+    await fetch('/api/socket');
 
-  let table = ['A♠ ', '7♥ ', 'J♣ ', '3♦ '];
-  let pot = 200;
+    socket = io();
+  };
 
-  let hand = ['A♥ ', 'A♣ '];
-  let bal = 1000;
+  useEffect(() => {
+    socketInitializer();
+  });
+
+  // Initialize everyone for demo purposes
+  useEffect(() => {
+    setPlayers([
+      {
+        username: 'leon',
+        bal: 200,
+        action: 'Call',
+        amt: '0',
+      },
+      {
+        username: 'kev',
+        bal: 1_000,
+        action: 'Raise',
+        amt: '100',
+      },
+    ]);
+
+    setTurn('');
+
+    setTable(['A♠ ', '7♥ ', 'J♣ ', '3♦ ']);
+
+    setPot(200);
+
+    setHand(['A♥ ', 'A♣ ']);
+    setBal(1000);
+  }, []);
 
   return (
     <>

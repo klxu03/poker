@@ -2,8 +2,16 @@ import Head from 'next/head';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
 
+import { useState, useEffect } from 'react';
+
 export default function Home() {
-  const games = [1, 21, 35, 402, 518, 6006];
+  const [games, setGames] = useState([]);
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    setGames([1, 21, 35, 402, 518, 6006]);
+    console.log(window.localStorage.getItem('username'));
+  }, []);
 
   return (
     <>
@@ -20,8 +28,23 @@ export default function Home() {
           </h1>
 
           <p className={styles.description}>
-            Get started by joining an open game!
+            Get started by entering a username and joining an open game!
           </p>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                window.localStorage.setItem('username', e.target.value);
+              }}
+            />
+            <h3>Username: {username}</h3>
+          </div>
+
+          <br />
 
           <div className={styles.grid}>
             {games.map((game) => (
@@ -31,7 +54,12 @@ export default function Home() {
                 href="/game/[id]"
                 as={`/game/${game}`}
               >
-                <a className={styles.card}>
+                <a
+                  className={styles.card}
+                  onClick={() => {
+                    console.log('Joining game:', game);
+                  }}
+                >
                   <h2>Game {game}</h2>
                   <h3>Created by Kev</h3>
                   <p>0/4 participants</p>
