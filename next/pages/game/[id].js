@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 // Global socket variable
 let socket;
 
-const Game = () => {
+const Game = ({ gameState }) => {
   const [players, setPlayers] = useState([]);
   const [turn, setTurn] = useState('');
   const [table, setTable] = useState([]);
@@ -29,35 +29,55 @@ const Game = () => {
     await fetch('/api/socket');
 
     socket = io();
+
+    socket.on('newUserJoined', (user) => {
+      // setPlayers([
+      //   ...players,
+      //   {
+      //     username: user.username,
+      //     bal: -1,
+      //     action: 'Fold',
+      //     amt: 0,
+      //   },
+      // ]);
+      setPlayers((currPlayers) => [
+        ...currPlayers,
+        { username: user.username, bal: -1, action: 'Fold', amt: 0 },
+      ]);
+    });
   };
 
-  useEffect(() => {
-    socketInitializer();
-  });
+  const sendNewUserJoining = async () => {
+    const username = window.localStorage.getItem('username');
+    socket.emit('newUserJoining', {
+      username,
+    });
+  };
 
-  // Initialize everyone for demo purposes
-  useEffect(() => {
+  const loadCurrentBoardState = async () => {
     setPlayers([
+      ...gameState.players,
       {
-        username: 'leon',
-        bal: 200,
-        action: 'Call',
-        amt: '0',
-      },
-      {
-        username: 'kev',
-        bal: 1_000,
-        action: 'Raise',
-        amt: '100',
+        username: window.localStorage.getItem('username'),
+        bal: -1,
+        action: 'Fold',
+        amt: 0,
       },
     ]);
 
-    setTurn('');
+    setTurn(gameState.turn);
 
-    setTable(['A♠ ', '7♥ ', 'J♣ ', '3♦ ']);
+    setTable(gameState.table);
+  };
 
-    setPot(200);
+  useEffect(() => {
+    const init = async () => {
+      await socketInitializer();
+      await sendNewUserJoining();
+      loadCurrentBoardState();
+    };
 
+    init();
     setHand(['A♥ ', 'A♣ ']);
     setBal(1000);
   }, []);
@@ -156,6 +176,20 @@ const Game = () => {
       </div>
     </>
   );
+};
+
+export const getServerSideProps = async (context) => {
+  const res = await fetch(
+    `http://localhost:3000/api/games/${context.params.id}`
+  );
+
+  const gameState = await res.json();
+
+  return {
+    props: {
+      gameState,
+    },
+  };
 };
 
 export default Game;

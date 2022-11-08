@@ -9,8 +9,13 @@ export default function Home() {
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    setGames([1, 21, 35, 402, 518, 6006]);
-    console.log(window.localStorage.getItem('username'));
+    // setGames([1, 21, 35, 402, 518, 6006]);
+    setGames([1]);
+    setUsername(window.localStorage.getItem('username'));
+    console.log(
+      'localStorage username:',
+      window.localStorage.getItem('username')
+    );
   }, []);
 
   return (
