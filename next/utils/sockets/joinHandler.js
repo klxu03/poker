@@ -17,7 +17,6 @@ export default (io, socket, db) => {
 			action: "Fold",
 			amt: 0,
 		});
-		console.log("db.data.game", db.data.game);
 		db.write();
 	};
 
