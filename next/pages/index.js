@@ -1,20 +1,20 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import styles from '../styles/Home.module.css';
+import Head from "next/head";
+import Link from "next/link";
+import styles from "../styles/Home.module.css";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [games, setGames] = useState([]);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     // setGames([1, 21, 35, 402, 518, 6006]);
     setGames([1]);
-    setUsername(window.localStorage.getItem('username'));
+    setUsername(window.localStorage.getItem("username"));
     console.log(
-      'localStorage username:',
-      window.localStorage.getItem('username')
+      "localStorage username:",
+      window.localStorage.getItem("username")
     );
   }, []);
 
@@ -43,7 +43,7 @@ export default function Home() {
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
-                window.localStorage.setItem('username', e.target.value);
+                window.localStorage.setItem("username", e.target.value);
               }}
             />
             <h3>Username: {username}</h3>
@@ -62,7 +62,7 @@ export default function Home() {
                 <a
                   className={styles.card}
                   onClick={() => {
-                    console.log('Joining game:', game);
+                    console.log("Joining game:", game);
                   }}
                 >
                   <h2>Game {game}</h2>
