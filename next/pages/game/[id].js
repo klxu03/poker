@@ -31,6 +31,15 @@ const Game = ({ gameState }) => {
     socket = io();
 
     socket.on("newUserJoined", (user) => {
+      if (
+        players.find((player) => {
+          return player.username == user.username;
+        })
+      ) {
+        // Don't add this new player as they already exist
+        return;
+      }
+
       setPlayers((currPlayers) => [
         ...currPlayers,
         {
@@ -49,6 +58,15 @@ const Game = ({ gameState }) => {
 
   const sendNewUserJoining = async () => {
     const username = window.localStorage.getItem("username");
+    if (
+      gameState.players.find((player) => {
+        return player.username == username;
+      })
+    ) {
+      // Don't emit as this player already exists
+      return;
+    }
+
     socket.emit("newUserJoining", {
       username,
     });
