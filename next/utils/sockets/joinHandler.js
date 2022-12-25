@@ -12,7 +12,10 @@ export default (io, socket, db) => {
       return;
     }
 
-    socket.broadcast.emit("newUserJoined", user);
+    socket.broadcast.emit("newUserJoined", {
+      username: user.username,
+      socket: socket.id,
+    });
 
     if (db.data.users[user.username] == undefined) {
       db.data.users[user.username] = 1000;
