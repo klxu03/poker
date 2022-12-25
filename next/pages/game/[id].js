@@ -31,7 +31,15 @@ const Game = ({ gameState }) => {
     socket = io();
 
     socket.on("newUserJoined", (user) => {
-      setPlayers((currPlayers) => [...currPlayers]);
+      setPlayers((currPlayers) => [
+        ...currPlayers,
+        {
+          username: user.username,
+          bal: 1000,
+          action: "Fold",
+          amt: 0,
+        },
+      ]);
     });
 
     socket.on("userLeft", (socketId) => {
@@ -48,12 +56,20 @@ const Game = ({ gameState }) => {
 
   const loadCurrentBoardState = async () => {
     if (gameState.players.length > 0) {
-      setPlayers([...gameState.players]);
+      setPlayers([
+        ...gameState.players,
+        {
+          username: window.localStorage.getItem("username"),
+          bal: 1000,
+          action: "Fold",
+          amt: 0,
+        },
+      ]);
     } else {
       setPlayers([
         {
           username: window.localStorage.getItem("username"),
-          bal: -1,
+          bal: 1000,
           action: "Fold",
           amt: 0,
         },
