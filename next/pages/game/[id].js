@@ -47,12 +47,17 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Fold",
           amt: 0,
+          socket: user.socket,
         },
       ]);
     });
 
     socket.on("userLeft", (socketId) => {
-      console.log(socketId, "left");
+      setPlayers((currPlayers) => {
+        return currPlayers.filter((player) => {
+          return player.socket != socketId;
+        });
+      });
     });
   };
 
@@ -81,6 +86,7 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Fold",
           amt: 0,
+          socket: "me",
         },
       ]);
     } else {
@@ -90,6 +96,7 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Fold",
           amt: 0,
+          socket: "me",
         },
       ]);
     }
