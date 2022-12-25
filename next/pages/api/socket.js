@@ -26,7 +26,7 @@ export default async function SocketHandler(req, res) {
 
   if (db.data === null) {
     // users is a key==username value==amount of chips
-    db.data = { users: {}, game: { players: [], turn: "", table: [] } };
+    db.data = { users: {}, games: [{ players: [], turn: "", table: [] }] };
     await db.write();
   }
 

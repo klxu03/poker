@@ -17,9 +17,9 @@ export default async function GameHandler(req, res) {
 
   if (db.data === null) {
     // users is a key==username value==amount of chips
-    db.data = { users: {}, game: { players: [], turn: "", table: [] } };
+    db.data = { users: {}, games: [{ players: [], turn: "", table: [] }] };
     await db.write();
   }
 
-  res.status(200).json(db.data.game);
+  res.status(200).json(db.data.games[0]);
 }

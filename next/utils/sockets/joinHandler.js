@@ -4,7 +4,7 @@
 export default (io, socket, db) => {
   const join = (user) => {
     if (
-      db.data.game.players.find((player) => {
+      db.data.games[0].players.find((player) => {
         return player.username == user.username;
       })
     ) {
@@ -22,7 +22,7 @@ export default (io, socket, db) => {
       db.write();
     }
 
-    db.data.game.players.push({
+    db.data.games[0].players.push({
       username: user.username,
       socket: socket.id,
       bal: db.data.users[user.username],
