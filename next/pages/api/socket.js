@@ -14,6 +14,9 @@ import joinHandler from "../../utils/sockets/joinHandler";
 import leaveHandler from "../../utils/sockets/leaveHandler";
 import promoteHandler from "../../utils/sockets/promoteHandler";
 
+// Default Data Types
+import defaultGame from "../../utils/default/defaultGame";
+
 export default async function SocketHandler(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,7 +32,7 @@ export default async function SocketHandler(req, res) {
     // users is a key==username value==amount of chips
     db.data = {
       users: {},
-      games: [{ id: "default", players: [], turn: "", table: [] }],
+      games: [defaultGame],
     };
     await db.write();
   }
