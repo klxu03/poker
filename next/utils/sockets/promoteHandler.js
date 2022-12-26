@@ -3,34 +3,26 @@
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (io, socket, db) => {
   // oldAdmin username and newAdmin username
-  const promote = (oldAdmin, newAdmin) => {
-    const oldAdminExist =
-      [] !=
-      db.data.games[0].players.find((player) => {
-        return player.username == oldAdmin && player.admin == true;
-      });
-    if (oldAdminExist) {
-      // Don't promote as this oldAdmin player doesn't exist or is not admin
+  const promote = ({ oldAdmin, newAdmin }) => {
+    const oldAdminIndex = db.data.games[0].players.findIndex((player) => {
+      return player.username == oldAdmin && player.admin == true;
+    });
+
+    const newAdminIndex = db.data.games[0].players.findIndex((player) => {
+      return player.username == newAdmin;
+    });
+    if (oldAdminIndex != -1 || newAdminIndex != -1) {
+      // Don't promote as this oldAdmin or newAdmin player doesn't exist or is not admin
       return;
     }
 
-    socket.broadcast.emit("newUserJoined", {
-      username: user.username,
-      socket: socket.id,
+    socket.broadcast.emit("newPromotion", {
+      oldAdmin,
+      newAdmin,
     });
 
-    if (db.data.users[user.username] == undefined) {
-      db.data.users[user.username] = 1000;
-      db.write();
-    }
-
-    db.data.games[0].players.push({
-      username: user.username,
-      socket: socket.id,
-      bal: db.data.users[user.username],
-      action: "Fold",
-      amt: 0,
-    });
+    db.data.games[0].players[oldAdminIndex].admin = false;
+    db.data.games[0].players[newAdminIndex].admin = true;
     db.write();
   };
 

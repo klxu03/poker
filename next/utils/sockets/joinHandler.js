@@ -9,7 +9,6 @@ export default (io, socket, db) => {
         return player.username == user.username;
       });
 
-    console.log("server joinHandler: ", { playerExist });
     if (playerExist) {
       // Don't emit as this player already exists
       return;
@@ -31,8 +30,14 @@ export default (io, socket, db) => {
       bal: db.data.users[user.username],
       action: "Fold",
       amt: 0,
-      admin: true,
+      admin: false,
     });
+
+    // If the user joining is the first player, make them admin
+    if (db.data.games[0].players.length == 1) {
+      db.data.games[0].players[0].admin = true;
+    }
+
     db.write();
   };
 

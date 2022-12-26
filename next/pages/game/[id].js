@@ -37,7 +37,6 @@ const Game = ({ gameState }) => {
           return player.username == user.username;
         });
 
-      console.log("newUserJoined: ", { playerExist });
       if (playerExist) {
         // Don't add this new player as they already exist
         return;
@@ -72,7 +71,6 @@ const Game = ({ gameState }) => {
       gameState.players.find((player) => {
         return player.username == username;
       });
-    console.log("sendNewUserJoining: ", { playerExist }, gameState.players);
     if (playerExist) {
       // Don't emit as this player already exists
       return;
@@ -93,9 +91,11 @@ const Game = ({ gameState }) => {
           action: "Fold",
           amt: 0,
           socket: "me",
+          admin: false,
         },
       ]);
     } else {
+      // You are the first player
       setPlayers([
         {
           username: window.localStorage.getItem("username"),
@@ -103,6 +103,7 @@ const Game = ({ gameState }) => {
           action: "Fold",
           amt: 0,
           socket: "me",
+          admin: true,
         },
       ]);
     }
@@ -226,7 +227,6 @@ export const getServerSideProps = async (context) => {
   );
 
   const gameState = await res.json();
-  console.log("gameState", gameState.players);
 
   return {
     props: {
