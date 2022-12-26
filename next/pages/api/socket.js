@@ -12,6 +12,7 @@ import { nanoid } from "nanoid";
 // Socket Connection Handlers
 import joinHandler from "../../utils/sockets/joinHandler";
 import leaveHandler from "../../utils/sockets/leaveHandler";
+import promoteHandler from "../../utils/sockets/promoteHandler";
 
 export default async function SocketHandler(req, res) {
   /* Data LowDB Stuff */
@@ -47,6 +48,7 @@ export default async function SocketHandler(req, res) {
   const onConnection = (socket) => {
     joinHandler(io, socket, db);
     leaveHandler(io, socket, db);
+    promoteHandler(io, socket, db);
   };
 
   io.on("connection", onConnection);
