@@ -31,11 +31,14 @@ const Game = ({ gameState }) => {
     socket = io();
 
     socket.on("newUserJoined", (user) => {
-      if (
+      const playerExist =
+        undefined !=
         players.find((player) => {
           return player.username == user.username;
-        })
-      ) {
+        });
+
+      console.log("newUserJoined: ", { playerExist });
+      if (playerExist) {
         // Don't add this new player as they already exist
         return;
       }
@@ -48,6 +51,7 @@ const Game = ({ gameState }) => {
           action: "Fold",
           amt: 0,
           socket: user.socket,
+          admin: false,
         },
       ]);
     });
@@ -63,11 +67,13 @@ const Game = ({ gameState }) => {
 
   const sendNewUserJoining = async () => {
     const username = window.localStorage.getItem("username");
-    if (
+    const playerExist =
+      undefined !=
       gameState.players.find((player) => {
         return player.username == username;
-      })
-    ) {
+      });
+    console.log("sendNewUserJoining: ", { playerExist }, gameState.players);
+    if (playerExist) {
       // Don't emit as this player already exists
       return;
     }

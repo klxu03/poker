@@ -1,17 +1,16 @@
-// Handle a new player joining a game
+// Handles a player being promoted to admin
 
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (io, socket, db) => {
-  const join = (user) => {
-    const playerExist =
-      undefined !=
+  // oldAdmin username and newAdmin username
+  const promote = (oldAdmin, newAdmin) => {
+    const oldAdminExist =
+      [] !=
       db.data.games[0].players.find((player) => {
-        return player.username == user.username;
+        return player.username == oldAdmin && player.admin == true;
       });
-
-    console.log("server joinHandler: ", { playerExist });
-    if (playerExist) {
-      // Don't emit as this player already exists
+    if (oldAdminExist) {
+      // Don't promote as this oldAdmin player doesn't exist or is not admin
       return;
     }
 
@@ -31,10 +30,9 @@ export default (io, socket, db) => {
       bal: db.data.users[user.username],
       action: "Fold",
       amt: 0,
-      admin: true,
     });
     db.write();
   };
 
-  socket.on("newUserJoining", join);
+  socket.on("newPromotionRequest", promote);
 };
