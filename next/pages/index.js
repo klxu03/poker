@@ -1,21 +1,31 @@
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
+import { nanoid } from "nanoid";
 
 import { useState, useEffect } from "react";
 
+import { useHydratedStore, useStore } from "../utils/store";
+
 export default function Home() {
   const [games, setGames] = useState([]);
-  const [username, setUsername] = useState("");
+
+  const username = useHydratedStore().username;
+  const setUsername = useHydratedStore().setUsername;
+  const id = useHydratedStore().id;
+  const setId = useHydratedStore().setId;
 
   useEffect(() => {
     // setGames([1, 21, 35, 402, 518, 6006]);
     setGames([1]);
-    setUsername(window.localStorage.getItem("username"));
-    console.log(
-      "localStorage username:",
-      window.localStorage.getItem("username")
-    );
+
+    console.log({ id });
+    if (id === null) {
+      const newId = nanoid();
+      console.log(newId);
+      // TODO: check-nanoid-unique
+      setId(newId);
+    }
   }, []);
 
   return (
@@ -43,7 +53,6 @@ export default function Home() {
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
-                window.localStorage.setItem("username", e.target.value);
               }}
             />
             <h3>Username: {username}</h3>
@@ -62,6 +71,7 @@ export default function Home() {
                 <a
                   className={styles.card}
                   onClick={() => {
+                    // TODO: create-user
                     console.log("Joining game:", game);
                   }}
                 >
