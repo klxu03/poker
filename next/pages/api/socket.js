@@ -7,8 +7,6 @@ import { JSONFile } from "lowdb/node";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { nanoid } from "nanoid";
-
 // Socket Connection Handlers
 import joinHandler from "../../utils/sockets/joinHandler";
 import leaveHandler from "../../utils/sockets/leaveHandler";
