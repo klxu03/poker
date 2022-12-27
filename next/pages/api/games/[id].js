@@ -4,8 +4,8 @@ import { JSONFile } from "lowdb/node";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Default Data Types
-import defaultGame from "../../../utils/default/defaultGame";
+// GameJS
+import { createGame } from "../../../utils/game";
 
 export default async function GameHandler(req, res) {
   /* Data LowDB Stuff */
@@ -22,7 +22,7 @@ export default async function GameHandler(req, res) {
     // users is a key==username value==amount of chips
     db.data = {
       users: {},
-      games: [defaultGame],
+      games: [createGame({ id: "default" })],
     };
     await db.write();
   }
