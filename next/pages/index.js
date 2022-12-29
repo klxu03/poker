@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
 import { nanoid } from "nanoid";
+import ky from "ky";
 
 import { useState, useEffect } from "react";
 
@@ -10,6 +11,7 @@ import { useHydratedStore, useStore } from "../utils/store";
 export default function Home() {
   const [games, setGames] = useState([]);
 
+  const loaded = useHydratedStore().loaded;
   const username = useHydratedStore().username;
   const setUsername = useHydratedStore().setUsername;
   const id = useHydratedStore().id;
@@ -19,14 +21,32 @@ export default function Home() {
     // setGames([1, 21, 35, 402, 518, 6006]);
     setGames([1]);
 
-    console.log({ id });
-    if (id === null) {
-      const newId = nanoid();
-      console.log(newId);
-      // TODO: check-nanoid-unique
-      setId(newId);
+    if (id === null && typeof window !== "undefined" && loaded) {
+      const assignId = async () => {
+        let newId;
+        while (true) {
+          newId = nanoid();
+          console.log({ newId });
+
+          const res = await ky
+            .get("http://localhost:3000/api/users/exist", {
+              searchParams: {
+                id: newId,
+              },
+            })
+            .json();
+
+          console.log({ res });
+
+          if (!res) {
+            break;
+          }
+        }
+        setId(newId);
+      };
+      assignId();
     }
-  }, []);
+  }, [loaded]);
 
   return (
     <>

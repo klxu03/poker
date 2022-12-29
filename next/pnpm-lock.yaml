@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   eslint: 8.26.0
   eslint-config-next: 13.0.0
+  ky: ^0.33.1
   lowdb: ^5.0.5
   nanoid: ^4.0.0
   next: 13.0.0
@@ -13,6 +14,7 @@ specifiers:
   zustand: ^4.1.5
 
 dependencies:
+  ky: 0.33.1
   lowdb: 5.0.5
   nanoid: 4.0.0
   next: 13.0.0_biqbaboplfbrettd7655fr4n2y
@@ -1325,6 +1327,11 @@ packages:
       array-includes: 3.1.5
       object.assign: 4.1.4
     dev: true
+
+  /ky/0.33.1:
+    resolution: {integrity: sha512-zZ9OlhgM4UEunvgJBH1bBl7+a7vas1HnCLSezu2CJawc4Ka+yJculRAVKbakUece4gW7kC5Dz+UGvbXIlpDt1w==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /language-subtag-registry/0.3.22:
     resolution: {integrity: sha512-tN0MCzyWnoz/4nHS6uxdlFWoUZT7ABptwKPQ52Ea7URk6vll88bWBVhodtnlfEuCcKWNGoc+uGbw1cwa9IKh/w==}
