@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import { useState, useEffect } from "react";
 
 const initialStates = {
+  loaded: false,
   id: null,
   username: null,
   setUsername: (username) => username,
@@ -15,6 +16,7 @@ const useLocalStore = create(
   persist(
     (set) => {
       return {
+        loaded: true,
         id: initialStates.id,
         username: initialStates.username,
         setUsername: (username) => {
