@@ -17,6 +17,15 @@ export default function Home() {
   const id = useHydratedStore().id;
   const setId = useHydratedStore().setId;
 
+  const updateUsername = () => {
+    ky.post("/api/users/create", {
+      json: {
+        id,
+        username,
+      },
+    });
+  };
+
   useEffect(() => {
     // setGames([1, 21, 35, 402, 518, 6006]);
     setGames([1]);
@@ -72,6 +81,7 @@ export default function Home() {
                 setUsername(e.target.value);
               }}
             />
+            <button onClick={updateUsername}>Update</button>
             <h3>Username: {username}</h3>
           </div>
 
@@ -88,7 +98,6 @@ export default function Home() {
                 <a
                   className={styles.card}
                   onClick={() => {
-                    // TODO: create-user
                     console.log("Joining game:", game);
                   }}
                 >
