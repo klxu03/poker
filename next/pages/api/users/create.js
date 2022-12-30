@@ -17,6 +17,7 @@ export default async function UserCreateHandler(req, res) {
   const db = new Low(adapter);
 
   await db.read();
+  console.log("req.body", req.body);
 
   if (db.data === null) {
     // users is a key==username value==amount of chips
@@ -25,12 +26,10 @@ export default async function UserCreateHandler(req, res) {
       games: { default: createGame() },
     };
     await db.write();
-
-    res.status(200).json(false);
-    return;
   }
 
-  console.log("req.query", req.query);
+  db.data.users[req.body.id] = req.body.username;
+  await db.write();
 
-  res.status(200).json(false);
+  res.status(200).json(true);
 }
