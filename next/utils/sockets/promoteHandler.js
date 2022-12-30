@@ -4,13 +4,17 @@
 export default (io, socket, db) => {
   // oldAdmin username and newAdmin username
   const promote = ({ oldAdmin, newAdmin }) => {
-    const oldAdminIndex = db.data.games[0].players.findIndex((player) => {
-      return player.username == oldAdmin && player.admin == true;
-    });
+    const oldAdminIndex = db.data.games["default"].players.findIndex(
+      (player) => {
+        return player.username == oldAdmin && player.admin == true;
+      }
+    );
 
-    const newAdminIndex = db.data.games[0].players.findIndex((player) => {
-      return player.username == newAdmin;
-    });
+    const newAdminIndex = db.data.games["default"].players.findIndex(
+      (player) => {
+        return player.username == newAdmin;
+      }
+    );
     if (oldAdminIndex != -1 || newAdminIndex != -1) {
       // Don't promote as this oldAdmin or newAdmin player doesn't exist or is not admin
       return;
@@ -21,8 +25,8 @@ export default (io, socket, db) => {
       newAdmin,
     });
 
-    db.data.games[0].players[oldAdminIndex].admin = false;
-    db.data.games[0].players[newAdminIndex].admin = true;
+    db.data.games["default"].players[oldAdminIndex].admin = false;
+    db.data.games["default"].players[newAdminIndex].admin = true;
     db.write();
   };
 

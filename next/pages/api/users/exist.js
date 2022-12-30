@@ -22,7 +22,7 @@ export default async function UserExistHandler(req, res) {
     // users is a key==username value==amount of chips
     db.data = {
       users: {},
-      games: [createGame({ id: "default" })],
+      games: { default: createGame() },
     };
     await db.write();
 

@@ -1,6 +1,5 @@
-export function createGame({ id }) {
+export function createGame() {
   return {
-    id,
     players: [],
     turn: "",
     table: [],

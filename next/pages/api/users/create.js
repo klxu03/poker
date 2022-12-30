@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 // GameJS
 import { createGame } from "../../../utils/game";
 
-export default async function GameHandler(req, res) {
+export default async function UserCreateHandler(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
   const file = join(__dirname, "../../../data/", "db.json");
@@ -25,7 +25,12 @@ export default async function GameHandler(req, res) {
       games: { default: createGame() },
     };
     await db.write();
+
+    res.status(200).json(false);
+    return;
   }
 
-  res.status(200).json(db.data.games["default"]);
+  console.log("req.query", req.query);
+
+  res.status(200).json(false);
 }
