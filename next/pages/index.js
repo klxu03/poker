@@ -26,17 +26,14 @@ export default function Home() {
         let newId;
         while (true) {
           newId = nanoid();
-          console.log({ newId });
 
           const res = await ky
-            .get("http://localhost:3000/api/users/exist", {
+            .get("/api/users/exist", {
               searchParams: {
                 id: newId,
               },
             })
             .json();
-
-          console.log({ res });
 
           if (!res) {
             break;

@@ -4,10 +4,16 @@ import cardStyles from "../../styles/Card.module.css";
 import io from "socket.io-client";
 import { useState, useEffect } from "react";
 
+import { useHydratedStore, useStore } from "../../utils/store";
+
 // Global socket variable
 let socket;
 
 const Game = ({ gameState }) => {
+  const loaded = useHydratedStore().loaded;
+  const username = useHydratedStore().username;
+  const id = useHydratedStore().id;
+
   const [players, setPlayers] = useState([]);
   const [turn, setTurn] = useState("");
   const [table, setTable] = useState([]);
@@ -65,7 +71,6 @@ const Game = ({ gameState }) => {
   };
 
   const sendNewUserJoining = async () => {
-    const username = window.localStorage.getItem("username");
     const playerExist =
       undefined !=
       gameState.players.find((player) => {
@@ -86,7 +91,7 @@ const Game = ({ gameState }) => {
       setPlayers([
         ...gameState.players,
         {
-          username: window.localStorage.getItem("username"),
+          username,
           bal: 1000,
           action: "Fold",
           amt: 0,
@@ -98,7 +103,7 @@ const Game = ({ gameState }) => {
       // You are the first player
       setPlayers([
         {
-          username: window.localStorage.getItem("username"),
+          username,
           bal: 1000,
           action: "Fold",
           amt: 0,
@@ -114,6 +119,10 @@ const Game = ({ gameState }) => {
   };
 
   useEffect(() => {
+    if (!loaded) {
+      return;
+    }
+
     const init = async () => {
       await socketInitializer();
       await sendNewUserJoining();
@@ -123,7 +132,7 @@ const Game = ({ gameState }) => {
     init();
     setHand(["A♥ ", "A♣ "]);
     setBal(1000);
-  }, []);
+  }, [loaded]);
 
   return (
     <>
@@ -227,6 +236,7 @@ export const getServerSideProps = async (context) => {
   );
 
   const gameState = await res.json();
+  console.log({ gameState });
 
   return {
     props: {

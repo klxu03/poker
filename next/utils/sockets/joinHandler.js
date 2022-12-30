@@ -5,7 +5,7 @@ export default (io, socket, db) => {
   const join = (user) => {
     const playerExist =
       undefined !=
-      db.data.games[0].players.find((player) => {
+      db.data.games["default"].players.find((player) => {
         return player.username == user.username;
       });
 
@@ -19,23 +19,18 @@ export default (io, socket, db) => {
       socket: socket.id,
     });
 
-    if (db.data.users[user.username] == undefined) {
-      db.data.users[user.username] = 1000;
-      db.write();
-    }
-
-    db.data.games[0].players.push({
+    db.data.games["default"].players.push({
       username: user.username,
       socket: socket.id,
-      bal: db.data.users[user.username],
+      bal: 1000,
       action: "Fold",
       amt: 0,
       admin: false,
     });
 
     // If the user joining is the first player, make them admin
-    if (db.data.games[0].players.length == 1) {
-      db.data.games[0].players[0].admin = true;
+    if (db.data.games["default"].players.length == 1) {
+      db.data.games["default"].players[0].admin = true;
     }
 
     db.write();
