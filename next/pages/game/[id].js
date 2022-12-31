@@ -22,6 +22,9 @@ const Game = ({ gameState }) => {
   const [hand, setHand] = useState([]);
   const [bal, setBal] = useState();
 
+  const [admin, setAdmin] = useState(false);
+  const [started, setStarted] = useState(false); // check if game has started or not
+
   const colors = {
     Fold: "red",
     Check: "#0070f3",
@@ -111,6 +114,9 @@ const Game = ({ gameState }) => {
           admin: true,
         },
       ]);
+
+      setAdmin(true);
+      setStarted(false);
     }
 
     setTurn(gameState.turn);
@@ -138,6 +144,7 @@ const Game = ({ gameState }) => {
     <>
       <div className={gameStyles.container}>
         <main className={gameStyles.main}>
+          {admin && <button>Start Game</button>}
           <h1>Players:</h1>
 
           <div className={gameStyles.grid}>

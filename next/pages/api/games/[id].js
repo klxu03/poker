@@ -27,5 +27,29 @@ export default async function GameHandler(req, res) {
     await db.write();
   }
 
-  res.status(200).json(db.data.games["default"]);
+  // Destructure everything but players
+  console.log("game data req received");
+  let ret = { ...db.data.games["default"], players: [] };
+  console.log({ ret });
+  console.log("ret.players", ret.players);
+
+  // Pass player info in the game besides their cards
+  // Deep copy of players into fullPlayers
+  const fullPlayers = JSON.parse(
+    JSON.stringify(db.data.games["default"].players)
+  );
+  let counter = 0;
+  for (let player of fullPlayers) {
+    let { cards, ...newPlayer } = player;
+    console.log({ counter, newPlayer });
+    ret.players.push(newPlayer);
+    counter = counter + 1;
+    if (counter > 7) {
+      break;
+    }
+  }
+  console.log({ ret });
+  console.log("ret.players", ret.players);
+
+  res.status(200).json(ret);
 }

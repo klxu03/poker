@@ -92,8 +92,10 @@ export default function Home() {
               <Link
                 key={game}
                 legacyBehavior
-                href="/game/[id]"
-                as={`/game/${game}`}
+                href={{
+                  pathname: "/game/[id]",
+                  query: { id: game },
+                }}
               >
                 <a
                   className={styles.card}

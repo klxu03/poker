@@ -26,6 +26,7 @@ export default (io, socket, db) => {
       action: "Fold",
       amt: 0,
       admin: false,
+      cards: [],
     });
 
     // If the user joining is the first player, make them admin
