@@ -3,5 +3,6 @@ export function createGame() {
     players: [],
     turn: "",
     table: [],
+    blind: -1,
   };
 }
