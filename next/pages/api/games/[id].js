@@ -38,7 +38,7 @@ export default async function GameHandler(req, res) {
   );
   for (let player of fullPlayers) {
     let { cards, ...newPlayer } = player;
-    console.log({ counter, newPlayer });
+    console.log({ newPlayer });
     ret.players.push(newPlayer);
   }
 
