@@ -21,7 +21,6 @@ export default (io, socket, db) => {
     }
 
     socket.broadcast.emit("newPromotion", {
-      oldAdmin,
       newAdmin,
     });
 
