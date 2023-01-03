@@ -25,13 +25,12 @@ export default (io, socket, db) => {
       bal: 1000,
       action: "Fold",
       amt: 0,
-      admin: false,
       cards: [],
     });
 
     // If the user joining is the first player, make them admin
     if (db.data.games["default"].players.length == 1) {
-      db.data.games["default"].players[0].admin = true;
+      db.data.games["default"].gameInfo.admin = user.username;
     }
 
     db.write();

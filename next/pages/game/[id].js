@@ -16,8 +16,11 @@ const Game = ({ gameState }) => {
 
   const [players, setPlayers] = useState([]);
   const [turn, setTurn] = useState("");
+  const [blind, setBlind] = useState(-1);
   const [table, setTable] = useState([]);
-  const [pot, setPot] = useState();
+  const [totalPot, setTotalPot] = useState(0);
+  const [currPot, setCurrPot] = useState(0);
+  const [bet, setBet] = useState();
 
   const [hand, setHand] = useState([]);
   const [bal, setBal] = useState();
@@ -38,6 +41,18 @@ const Game = ({ gameState }) => {
     await fetch("/api/socket");
 
     socket = io();
+
+    socket.on("start", () => {
+      setTurn(0);
+      setBlind(0);
+      setStarted(true);
+
+      // get your cards
+      setHand(["A♥ ", "A♣ "]);
+
+      // get your bal
+      setBal(1000);
+    });
 
     socket.on("newUserJoined", (user) => {
       const playerExist =
@@ -99,7 +114,6 @@ const Game = ({ gameState }) => {
           action: "Fold",
           amt: 0,
           socket: "me",
-          admin: false,
         },
       ]);
     } else {
@@ -111,7 +125,6 @@ const Game = ({ gameState }) => {
           action: "Fold",
           amt: 0,
           socket: "me",
-          admin: true,
         },
       ]);
 
@@ -120,8 +133,12 @@ const Game = ({ gameState }) => {
     }
 
     setTurn(gameState.turn);
-
+    setBlind(gameState.blind);
     setTable(gameState.table);
+    setTotalPot(gameState.totalPot);
+    setCurrPot(gameState.currPot);
+    setBet(gameState.bet);
+    setStarted(gameState.turn != null);
   };
 
   useEffect(() => {
@@ -136,15 +153,19 @@ const Game = ({ gameState }) => {
     };
 
     init();
-    setHand(["A♥ ", "A♣ "]);
-    setBal(1000);
   }, [loaded]);
+
+  const sendStartGame = () => {
+    socket.emit("startRequest", "default");
+  };
 
   return (
     <>
       <div className={gameStyles.container}>
         <main className={gameStyles.main}>
-          {admin && <button>Start Game</button>}
+          {admin && started == false && (
+            <button onClick={sendStartGame}>Start Game</button>
+          )}
           <h1>Players:</h1>
 
           <div className={gameStyles.grid}>
@@ -198,7 +219,8 @@ const Game = ({ gameState }) => {
               </>
             ))}
           </div>
-          <h2>Total Pot Size: {pot}</h2>
+          <h3>Current Pot Size: {currPot}</h3>
+          <h2>Total Pot Size: {totalPot}</h2>
 
           <div className={cardStyles.grid}>
             {hand.map((card) => (
