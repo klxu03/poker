@@ -13,7 +13,8 @@ export function createGame() {
     players: [], // array of player objects
     turn: null, // index of whose turn it is
     blind: null, // index of who the big blind is
-    table: [], // array of cards represented as strings on the table
+    table: [], // array of all 5 cards to be on the table
+    tableCounter: 0, // counter of the number of cards displayed on the table
     totalPot: 0, // total pot
     currPot: 0, // current round pot
     bet: {

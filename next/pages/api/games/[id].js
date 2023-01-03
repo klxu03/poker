@@ -29,7 +29,11 @@ export default async function GameHandler(req, res) {
 
   // Destructure everything but players
   console.log("game data req received on server");
-  let ret = { ...db.data.games["default"], players: [] };
+  let { tableCounter, ...ret } = {
+    ...db.data.games["default"],
+    players: [],
+    table: [],
+  };
 
   // Pass player info in the game besides their cards
   // Deep copy of players into fullPlayers
@@ -40,6 +44,11 @@ export default async function GameHandler(req, res) {
     let { cards, ...newPlayer } = player;
     console.log({ newPlayer });
     ret.players.push(newPlayer);
+  }
+
+  // Add in the cards to table
+  for (let i = 0; i < tableCounter; i++) {
+    ret.table.push(db.data.games["default"].table[i]);
   }
 
   res.status(200).json(ret);
