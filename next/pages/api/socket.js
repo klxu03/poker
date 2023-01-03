@@ -8,6 +8,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Socket Connection Handlers
+import actionHandler from "../../utils/sockets/actionHandler";
 import joinHandler from "../../utils/sockets/joinHandler";
 import leaveHandler from "../../utils/sockets/leaveHandler";
 import promoteHandler from "../../utils/sockets/promoteHandler";
@@ -47,6 +48,7 @@ export default async function SocketHandler(req, res) {
 
   // Callback function on connection
   const onConnection = (socket) => {
+    actionHandler(io, socket, db);
     joinHandler(io, socket, db);
     leaveHandler(io, socket, db);
     promoteHandler(io, socket, db);
