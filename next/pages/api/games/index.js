@@ -25,6 +25,8 @@ export default async function ListGames(req, res) {
       users: {},
       games: {},
     };
+
+    db.data.games["default"] = createGame();
     await db.write();
   }
 
