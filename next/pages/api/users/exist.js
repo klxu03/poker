@@ -4,9 +4,6 @@ import { JSONFile } from "lowdb/node";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// GameJS
-import { createGame } from "../../../utils/game";
-
 export default async function UserExistHandler(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
