@@ -4,6 +4,9 @@ import { JSONFile } from "lowdb/node";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// GameJS
+import { createGame } from "../../../utils/game";
+
 // Return a list of currently active games
 export default async function ListGames(req, res) {
   /* Data LowDB Stuff */
@@ -16,25 +19,9 @@ export default async function ListGames(req, res) {
 
   await db.read();
 
-  if (db.data === null) {
-    console.log("init db from from games/index.js");
-    db.data = {
-      users: {},
-      games: {},
-    };
-    
-    await db.write();
-  }
+  db.data.games["default"] = createGame();
 
-  let ret = [];
+  await db.write();
 
-  for (const [key, value] of Object.entries(db.data.games)) {
-    ret.push({
-      id: key,
-      admin: value.gameInfo.admin,
-      numPlayers: value.players.length,
-    });
-  }
-
-  res.status(200).json(ret);
+  res.status(200).send("OK");
 }

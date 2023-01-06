@@ -53,6 +53,10 @@ export default function Home({ initialGames }) {
     }
   }, [loaded]);
 
+  const createGame = () => {
+    ky.post("/api/games/create");
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -99,6 +103,7 @@ export default function Home({ initialGames }) {
                   className={styles.card}
                   onClick={() => {
                     console.log("Creating default game");
+                    createGame();
                   }}
                 >
                   <h2>Create Default Game</h2>
