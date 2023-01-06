@@ -22,7 +22,7 @@ export default async function ListGames(req, res) {
       users: {},
       games: {},
     };
-
+    
     await db.write();
   }
 
