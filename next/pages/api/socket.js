@@ -13,9 +13,6 @@ import joinHandler from "../../utils/sockets/joinHandler";
 import leaveHandler from "../../utils/sockets/leaveHandler";
 import promoteHandler from "../../utils/sockets/promoteHandler";
 
-// GameJS
-import { createGame } from "../../utils/game";
-
 export default async function SocketHandler(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
@@ -26,15 +23,6 @@ export default async function SocketHandler(req, res) {
   const db = new Low(adapter);
 
   await db.read();
-
-  if (db.data === null) {
-    // users is a key==username value==amount of chips
-    db.data = {
-      users: {},
-      games: { default: createGame() },
-    };
-    await db.write();
-  }
 
   // The socket has already been initialized
   if (res.socket.server.io) {

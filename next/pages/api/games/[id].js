@@ -4,9 +4,6 @@ import { JSONFile } from "lowdb/node";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// GameJS
-import { createGame } from "../../../utils/game";
-
 export default async function GameHandler(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
@@ -18,13 +15,8 @@ export default async function GameHandler(req, res) {
 
   await db.read();
 
-  if (db.data === null) {
-    // users is a key==username value==amount of chips
-    db.data = {
-      users: {},
-      games: { default: createGame() },
-    };
-    await db.write();
+  if (db.data.games["default"] === undefined) {
+    res.status(500).send("A game with this ID is not found");
   }
 
   // Destructure everything but players

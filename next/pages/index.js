@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 
 import { useHydratedStore, useStore } from "../utils/store";
 
-export default function Home() {
+export default function Home({ initialGames }) {
   const [games, setGames] = useState([]);
 
   const loaded = useHydratedStore().loaded;
@@ -27,8 +27,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // setGames([1, 21, 35, 402, 518, 6006]);
-    setGames([1]);
+    setGames(initialGames);
 
     if (id === null && typeof window !== "undefined" && loaded) {
       const assignId = async () => {
@@ -88,24 +87,42 @@ export default function Home() {
           <br />
 
           <div className={styles.grid}>
-            {games.map((game) => (
+            {games.length === 0 && (
               <Link
-                key={game}
                 legacyBehavior
                 href={{
                   pathname: "/game/[id]",
-                  query: { id: game },
+                  query: { id: "default" },
                 }}
               >
                 <a
                   className={styles.card}
                   onClick={() => {
-                    console.log("Joining game:", game);
+                    console.log("Creating default game");
                   }}
                 >
-                  <h2>Game {game}</h2>
-                  <h3>Created by Kev</h3>
-                  <p>0/4 participants</p>
+                  <h2>Create Default Game</h2>
+                </a>
+              </Link>
+            )}
+            {games.map((game) => (
+              <Link
+                key={game.id}
+                legacyBehavior
+                href={{
+                  pathname: "/game/[id]",
+                  query: { id: game.id },
+                }}
+              >
+                <a
+                  className={styles.card}
+                  onClick={() => {
+                    console.log("Joining game:", game.id);
+                  }}
+                >
+                  <h2>Game {game.id}</h2>
+                  <h3>Created by {game.admin}</h3>
+                  <p>{game.numPlayers} participants</p>
                 </a>
               </Link>
             ))}
@@ -115,3 +132,16 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps = async (context) => {
+  const res = await fetch("http://localhost:3000/api/games");
+
+  const games = await res.json();
+  console.log({ games });
+
+  return {
+    props: {
+      initialGames: games,
+    },
+  };
+};
