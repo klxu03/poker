@@ -10,8 +10,13 @@ export default (io, socket, db) => {
         return player.socket !== socket.id;
       }
     );
+
+    // If last person left the game, delete the game
+    if (db.data.games["default"].players.length === 0) {
+      db.data.games = {};
+    }
+
     db.write();
-    console.log("user left: ", socket.id);
   };
 
   socket.on("disconnect", leave);
