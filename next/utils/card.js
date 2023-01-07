@@ -54,7 +54,33 @@ export function setCards({ gameId, io, db }) {
   shuffleCards(cards);
 
   // deal the cards
-  // set the table
+  const numPlayers = db.data.games[gameId].players.length;
+  for (let i = 0; i < numPlayers; i++) {
+    io.to(db.data.games[gameId].players[i].socket).emit("initialCards", [
+      cards[i * 2],
+      cards[i * 2 + 1],
+    ]);
 
-  console.log({ cards });
+    db.data.games[gameId].players[i].cards = [cards[i * 2], cards[i * 2 + 1]];
+    db.data.games[gameId].players[i].action = "Call";
+    // actionHandler of update status of player from Pending -> Call
+  }
+
+  db.data.games[gameId].table = [
+    cards[numPlayers * 2],
+    cards[numPlayers * 2 + 1],
+    cards[numPlayers * 2 + 2],
+    cards[numPlayers * 2 + 3],
+    cards[numPlayers * 2 + 4],
+  ];
+
+  // set the blinds
+  const bigBlindIndex = (db.data.games[gameId].blind + 1) % numPlayers;
+  io.sockets.emit("bigBlind", bigBlindIndex);
+  db.data.games[gameId].blind = bigBlindIndex;
+
+  // big blind makes a bet at start of round
+  // check actionHandler
+
+  db.write();
 }
