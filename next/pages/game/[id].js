@@ -33,6 +33,7 @@ const Game = ({ gameState }) => {
     Check: "#0070f3",
     Call: "gray",
     Raise: "green",
+    Pending: "#36454F",
   };
 
   // Request to initialize the socket client-side
@@ -43,15 +44,7 @@ const Game = ({ gameState }) => {
     socket = io();
 
     socket.on("start", () => {
-      setTurn(0);
-      setBlind(0);
       setStarted(true);
-
-      // get your cards
-      setHand(["A♥ ", "A♣ "]);
-
-      // get your bal
-      setBal(1000);
     });
 
     socket.on("newUserJoined", (user) => {
@@ -71,7 +64,7 @@ const Game = ({ gameState }) => {
         {
           username: user.username,
           bal: 1000,
-          action: "Fold",
+          action: "Pending",
           amt: 0,
           socket: user.socket,
           admin: false,
@@ -86,6 +79,17 @@ const Game = ({ gameState }) => {
         });
       });
     });
+
+    socket.on("initialCards", (cards) => {
+      setHand(cards);
+    });
+
+    socket.on("bigBlind", (index) => {
+      setBlind(index);
+      setTurn((index + 1) % players.length);
+    });
+
+    // socket on updatedBal, update a player's bal
   };
 
   const sendNewUserJoining = async () => {
@@ -111,7 +115,7 @@ const Game = ({ gameState }) => {
         {
           username,
           bal: 1000,
-          action: "Fold",
+          action: "Pending",
           amt: 0,
           socket: "me",
         },
@@ -122,7 +126,7 @@ const Game = ({ gameState }) => {
         {
           username,
           bal: 1000,
-          action: "Fold",
+          action: "Pending",
           amt: 0,
           socket: "me",
         },

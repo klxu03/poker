@@ -24,6 +24,8 @@ export function createGame() {
     gameInfo: {
       admin: "", // username of the admin
       entryBal: 1000, // balance everyone joining the game gets
+      smallBlind: 50,
+      bigBlind: 100,
       pwd: null, // password to join game
     },
   };

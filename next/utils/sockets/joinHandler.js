@@ -22,8 +22,8 @@ export default (io, socket, db) => {
     db.data.games["default"].players.push({
       username: user.username,
       socket: socket.id,
-      bal: 1000,
-      action: "Fold",
+      bal: db.data.games["default"].gameInfo.entryBal,
+      action: "Pending",
       amt: 0,
       cards: [],
     });
