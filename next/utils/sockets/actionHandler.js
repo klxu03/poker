@@ -17,9 +17,5 @@ export default (io, socket, db) => {
     db.write();
   };
 
-  const updateBal = (gameId, username) => {};
-
-  const bet = (gameId, username) => {};
-
   socket.on("startRequest", start);
 };

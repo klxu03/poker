@@ -66,6 +66,7 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Pending",
           amt: 0,
+          totalAmt: 0,
           socket: user.socket,
         },
       ]);
@@ -90,6 +91,19 @@ const Game = ({ gameState }) => {
 
     socket.on("playerTurn", (username) => {
       setTurn(username);
+    });
+
+    socket.on("updateBal", ({ username, newBal }) => {
+      // update their bal
+      setPlayers((currPlayers) => {
+        for (let player of currPlayers) {
+          if (player.username === username) {
+            player.bal = newBal;
+          }
+        }
+
+        return currPlayers;
+      });
     });
 
     // socket on updatedBal, update a player's bal
@@ -120,6 +134,7 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Pending",
           amt: 0,
+          totalAmt: 0,
           socket: "me",
         },
       ]);
@@ -131,6 +146,7 @@ const Game = ({ gameState }) => {
           bal: 1000,
           action: "Pending",
           amt: 0,
+          totalAmt: 0,
           socket: "me",
         },
       ]);
