@@ -7,8 +7,8 @@ import { fileURLToPath } from "node:url";
 // GameJS
 import { createGame } from "../../../utils/game";
 
-// Return a list of currently active games
-export default async function ListGames(req, res) {
+// Post request to create a game
+export default async function CreateGame(req, res) {
   /* Data LowDB Stuff */
   let __dirname = dirname(fileURLToPath(import.meta.url));
   const file = join(__dirname, "../../../data/", "db.json");

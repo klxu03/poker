@@ -2,7 +2,8 @@
 
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (io, socket, db) => {
-  const join = (user) => {
+  const join = async (user) => {
+    await db.read();
     const playerExist =
       undefined !=
       db.data.games["default"].players.find((player) => {

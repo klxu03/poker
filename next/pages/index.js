@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
 import { nanoid } from "nanoid";
 import ky from "ky";
@@ -10,6 +11,7 @@ import { useHydratedStore, useStore } from "../utils/store";
 
 export default function Home({ initialGames }) {
   const [games, setGames] = useState([]);
+  const router = useRouter();
 
   const loaded = useHydratedStore().loaded;
   const username = useHydratedStore().username;
@@ -53,8 +55,9 @@ export default function Home({ initialGames }) {
     }
   }, [loaded]);
 
-  const createGame = () => {
-    ky.post("/api/games/create");
+  const createGame = async (gameId) => {
+    await ky.post("/api/games/create");
+    router.push(`/game/${gameId}`);
   };
 
   return (
@@ -92,23 +95,15 @@ export default function Home({ initialGames }) {
 
           <div className={styles.grid}>
             {games.length === 0 && (
-              <Link
-                legacyBehavior
-                href={{
-                  pathname: "/game/[id]",
-                  query: { id: "default" },
+              <a
+                className={styles.card}
+                onClick={() => {
+                  console.log("Creating default game");
+                  createGame("default");
                 }}
               >
-                <a
-                  className={styles.card}
-                  onClick={() => {
-                    console.log("Creating default game");
-                    createGame();
-                  }}
-                >
-                  <h2>Create Default Game</h2>
-                </a>
-              </Link>
+                <h2>Create Default Game</h2>
+              </a>
             )}
             {games.map((game) => (
               <Link
