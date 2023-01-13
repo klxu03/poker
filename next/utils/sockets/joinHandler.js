@@ -2,23 +2,41 @@
 
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (io, socket, db) => {
-	const join = (user) => {
-		socket.broadcast.emit("newUserJoined", user);
+  const join = async (user) => {
+    await db.read();
+    const playerExist =
+      undefined !=
+      db.data.games["default"].players.find((player) => {
+        return player.username == user.username;
+      });
 
-		if (db.data.users[user.username] == undefined) {
-			db.data.users[user.username] = 1000;
-			db.write();
-		}
+    if (playerExist) {
+      // Don't emit as this player already exists
+      return;
+    }
 
-		db.data.game.players.push({
-			username: user.username,
-			socket: socket.id,
-			bal: db.data.users[user.username],
-			action: "Fold",
-			amt: 0,
-		});
-		db.write();
-	};
+    socket.broadcast.emit("newUserJoined", {
+      username: user.username,
+      socket: socket.id,
+    });
 
-	socket.on("newUserJoining", join);
+    db.data.games["default"].players.push({
+      username: user.username,
+      socket: socket.id,
+      bal: db.data.games["default"].gameInfo.entryBal,
+      action: "Pending",
+      amt: 0,
+      totalAmt: 0,
+      cards: [],
+    });
+
+    // If the user joining is the first player, make them admin
+    if (db.data.games["default"].players.length == 1) {
+      db.data.games["default"].gameInfo.admin = user.username;
+    }
+
+    db.write();
+  };
+
+  socket.on("newUserJoining", join);
 };
