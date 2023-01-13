@@ -9,6 +9,7 @@ export function createGame() {
           "bal": 1000,
           "action": "Fold",
           "amt": 0,
+          "totalAmt": 0,
           "cards": []
         },
     */
@@ -33,21 +34,51 @@ export function createGame() {
   };
 }
 
-export function makeBet({ gameId, db, username, amt }) {
-  // make the bet
+export function makeBet({ gameId, db, io, username, amt }) {
+  const currGame = db.data.games[gameId];
+  for (let player of currGame.players) {
+    if (player.username === username) {
+      player.bal -= amt;
+      player.amt += amt;
+      player.totalAmt += amt;
+      player.action = "Call";
+
+      io.sockets.emit("updateBal", { username, newBal: player.bal });
+    }
+  }
+
+  db.write();
 }
 
 export function startTurn({ gameId, io, socket, db }) {
   const numPlayers = db.data.games[gameId].players.length;
+  const currGame = db.data.games[gameId];
 
   // set the blinds
   const bigBlindIndex = (db.data.games[gameId].blind + 1) % numPlayers;
   io.sockets.emit("bigBlind", bigBlindIndex);
-  // socket.emit("bigBlind", bigBlindIndex);
   db.data.games[gameId].blind = bigBlindIndex;
 
   // big blind makes a bet at start of round
-  // refactor: handle turn with big blind making a bet, then auto next person's turn
+  if (currGame.players[bigBlindIndex].bal < currGame.gameInfo.bigBlind) {
+    makeBet({
+      gameId,
+      db,
+      io,
+      username: currGame.players[bigBlindIndex].username,
+      amt: currGame.players[bigBlindIndex].bal,
+    });
+  } else {
+    makeBet({
+      gameId,
+      db,
+      io,
+      username: currGame.players[bigBlindIndex].username,
+      amt: currGame.gameInfo.bigBlind,
+    });
+  }
+
+  // small blind bet
 
   // manually set the turn to be small blind because after small blind makes bet, will move onto 3rd person's turn, but should be small blind
   // small blinds turn
@@ -55,10 +86,6 @@ export function startTurn({ gameId, io, socket, db }) {
     "playerTurn",
     db.data.games[gameId].players[(bigBlindIndex + 1) % numPlayers].username
   );
-  // socket.emit(
-  //   "playerTurn",
-  //   db.data.games[gameId].players[(bigBlindIndex + 1) % numPlayers].username
-  // );
 
   // check actionHandler
 }
