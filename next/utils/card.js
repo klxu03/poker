@@ -74,13 +74,5 @@ export function setCards({ gameId, io, db }) {
     cards[numPlayers * 2 + 4],
   ];
 
-  // set the blinds
-  const bigBlindIndex = (db.data.games[gameId].blind + 1) % numPlayers;
-  io.sockets.emit("bigBlind", bigBlindIndex);
-  db.data.games[gameId].blind = bigBlindIndex;
-
-  // big blind makes a bet at start of round
-  // check actionHandler
-
   db.write();
 }
