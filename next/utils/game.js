@@ -1,3 +1,5 @@
+// Helper functions that deal with items dealing with the actual game and updating the db
+
 export function createGame() {
   return {
     /* Info in each player
@@ -29,4 +31,34 @@ export function createGame() {
       pwd: null, // password to join game
     },
   };
+}
+
+export function makeBet({ gameId, db, username, amt }) {
+  // make the bet
+}
+
+export function startTurn({ gameId, io, socket, db }) {
+  const numPlayers = db.data.games[gameId].players.length;
+
+  // set the blinds
+  const bigBlindIndex = (db.data.games[gameId].blind + 1) % numPlayers;
+  io.sockets.emit("bigBlind", bigBlindIndex);
+  // socket.emit("bigBlind", bigBlindIndex);
+  db.data.games[gameId].blind = bigBlindIndex;
+
+  // big blind makes a bet at start of round
+  // refactor: handle turn with big blind making a bet, then auto next person's turn
+
+  // manually set the turn to be small blind because after small blind makes bet, will move onto 3rd person's turn, but should be small blind
+  // small blinds turn
+  io.sockets.emit(
+    "playerTurn",
+    db.data.games[gameId].players[(bigBlindIndex + 1) % numPlayers].username
+  );
+  // socket.emit(
+  //   "playerTurn",
+  //   db.data.games[gameId].players[(bigBlindIndex + 1) % numPlayers].username
+  // );
+
+  // check actionHandler
 }

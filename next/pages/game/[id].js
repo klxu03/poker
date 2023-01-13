@@ -67,7 +67,6 @@ const Game = ({ gameState }) => {
           action: "Pending",
           amt: 0,
           socket: user.socket,
-          admin: false,
         },
       ]);
     });
@@ -86,7 +85,11 @@ const Game = ({ gameState }) => {
 
     socket.on("bigBlind", (index) => {
       setBlind(index);
-      setTurn((index + 1) % players.length);
+      console.log("setting big blind to be", index);
+    });
+
+    socket.on("playerTurn", (username) => {
+      setTurn(username);
     });
 
     // socket on updatedBal, update a player's bal
