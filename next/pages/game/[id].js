@@ -103,8 +103,8 @@ const Game = ({ gameState }) => {
               player.amt += balDiff;
               player.totalAmt += balDiff;
 
-              setCurrPot(currPot + balDiff);
-              setTotalPot(totalPot + balDiff);
+              setCurrPot((currPot) => currPot + balDiff);
+              setTotalPot((totalPot) => totalPot + balDiff);
             }
             player.bal = newBal;
           }
