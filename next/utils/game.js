@@ -122,7 +122,13 @@ export function startRound({ gameId, io, socket, db }) {
     username: currGame.players[(bigBlindIndex + 1) % numPlayers].username,
     amt: currGame.gameInfo.smallBlind,
   });
-  currGame.players[(bigBlindIndex + 1) % numPlayers].action = "Pending";
+  updateAction({
+    gameId,
+    db,
+    io,
+    username: currGame.players[(bigBlindIndex + 1) % numPlayers].username,
+    action: "Call",
+  });
 
   // manually set the turn to be small blind because after small blind makes bet, will move onto 3rd person's turn, but should be small blind
   // small blinds turn

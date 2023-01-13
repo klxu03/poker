@@ -98,6 +98,11 @@ const Game = ({ gameState }) => {
       setPlayers((currPlayers) => {
         for (let player of currPlayers) {
           if (player.username === username) {
+            if (newBal < player.bal) {
+              const balDiff = player.bal - newBal;
+              player.amt += balDiff;
+              player.totalAmt += balDiff;
+            }
             player.bal = newBal;
           }
         }
@@ -212,8 +217,11 @@ const Game = ({ gameState }) => {
                   <h3>Balance: {player.bal}</h3>
                   <p>[{player.action}]</p>
 
-                  {(player.amt != 0 || player.action != "Fold") && (
-                    <p>Amount: {player.amt}</p>
+                  {player.action != "Pending" && player.action != "Fold" && (
+                    <>
+                      <p>Amount: {player.amt}</p>
+                      <p>Total Amount: {player.totalAmt}</p>
+                    </>
                   )}
                 </a>
 
