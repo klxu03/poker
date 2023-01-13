@@ -106,7 +106,17 @@ const Game = ({ gameState }) => {
       });
     });
 
-    // socket on updatedBal, update a player's bal
+    socket.on("updateAction", ({ username, action }) => {
+      setPlayers((currPlayers) => {
+        for (let player of currPlayers) {
+          if (player.username === username) {
+            player.action = action;
+          }
+        }
+
+        return currPlayers;
+      });
+    });
   };
 
   const sendNewUserJoining = async () => {

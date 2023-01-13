@@ -25,6 +25,7 @@ export default (io, socket, db) => {
       bal: db.data.games["default"].gameInfo.entryBal,
       action: "Pending",
       amt: 0,
+      totalAmt: 0,
       cards: [],
     });
 

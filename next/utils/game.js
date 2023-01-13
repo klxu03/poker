@@ -34,14 +34,27 @@ export function createGame() {
   };
 }
 
+// Username attempting to make a bet of amt
 export function makeBet({ gameId, db, io, username, amt }) {
   const currGame = db.data.games[gameId];
   for (let player of currGame.players) {
     if (player.username === username) {
-      player.bal -= amt;
-      player.amt += amt;
-      player.totalAmt += amt;
-      player.action = "Call";
+      if (player.bal < amt) {
+        player.amt += player.bal;
+        player.totalAmt += player.bal;
+
+        currGame.currPot += player.bal;
+        currGame.totalPot += player.bal;
+
+        player.bal = 0;
+      } else {
+        player.bal -= amt;
+        player.amt += amt;
+        player.totalAmt += amt;
+
+        currGame.currPot += amt;
+        currGame.totalPot += amt;
+      }
 
       io.sockets.emit("updateBal", { username, newBal: player.bal });
     }
@@ -50,9 +63,35 @@ export function makeBet({ gameId, db, io, username, amt }) {
   db.write();
 }
 
-export function startTurn({ gameId, io, socket, db }) {
+export function updateAction({ gameId, db, io, username, action }) {
+  io.sockets.emit("updateAction", { username, action });
+
+  const currGame = db.data.games[gameId];
+
+  for (let player of currGame.players) {
+    if (player.username === username) {
+      player.action = action;
+    }
+  }
+
+  db.write();
+}
+
+// Start a poker round
+export function startRound({ gameId, io, socket, db }) {
   const numPlayers = db.data.games[gameId].players.length;
   const currGame = db.data.games[gameId];
+
+  // make everyone's status pending
+  for (let player of currGame.players) {
+    updateAction({
+      gameId,
+      db,
+      io,
+      username: player.username,
+      action: "Pending",
+    });
+  }
 
   // set the blinds
   const bigBlindIndex = (db.data.games[gameId].blind + 1) % numPlayers;
@@ -60,25 +99,30 @@ export function startTurn({ gameId, io, socket, db }) {
   db.data.games[gameId].blind = bigBlindIndex;
 
   // big blind makes a bet at start of round
-  if (currGame.players[bigBlindIndex].bal < currGame.gameInfo.bigBlind) {
-    makeBet({
-      gameId,
-      db,
-      io,
-      username: currGame.players[bigBlindIndex].username,
-      amt: currGame.players[bigBlindIndex].bal,
-    });
-  } else {
-    makeBet({
-      gameId,
-      db,
-      io,
-      username: currGame.players[bigBlindIndex].username,
-      amt: currGame.gameInfo.bigBlind,
-    });
-  }
+  makeBet({
+    gameId,
+    db,
+    io,
+    username: currGame.players[bigBlindIndex].username,
+    amt: currGame.gameInfo.bigBlind,
+  });
+  updateAction({
+    gameId,
+    db,
+    io,
+    username: currGame.players[bigBlindIndex].username,
+    action: "Raise",
+  });
 
   // small blind bet
+  makeBet({
+    gameId,
+    db,
+    io,
+    username: currGame.players[(bigBlindIndex + 1) % numPlayers].username,
+    amt: currGame.gameInfo.smallBlind,
+  });
+  currGame.players[(bigBlindIndex + 1) % numPlayers].action = "Pending";
 
   // manually set the turn to be small blind because after small blind makes bet, will move onto 3rd person's turn, but should be small blind
   // small blinds turn
@@ -87,5 +131,15 @@ export function startTurn({ gameId, io, socket, db }) {
     db.data.games[gameId].players[(bigBlindIndex + 1) % numPlayers].username
   );
 
+  // set the bet to be small blind, so when the game wraps back up to small blind it becomes next turn
+  currGame.bet = {
+    user: (bigBlindIndex + 1) % numPlayers,
+    amt: currGame.gameInfo.bigBlind,
+  };
+  // current turn is small blind
+  currGame.turn = (bigBlindIndex + 1) % numPlayers;
+
   // check actionHandler
+
+  db.write();
 }
