@@ -60,6 +60,15 @@ export default function Home({ initialGames }) {
     router.push(`/game/${gameId}`);
   };
 
+  const deleteGame = async (gameId) => {
+    await ky.post("/api/games/delete");
+
+    const res = await ky.get("http://localhost:3000/api/games");
+    const games = await res.json();
+
+    setGames(games);
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -126,6 +135,16 @@ export default function Home({ initialGames }) {
                 </a>
               </Link>
             ))}
+            {games.length > 0 && (
+              <a
+                className={styles.card}
+                onClick={() => {
+                  deleteGame("default");
+                }}
+              >
+                <h2>Delete Default Game</h2>
+              </a>
+            )}
           </div>
         </main>
       </div>
