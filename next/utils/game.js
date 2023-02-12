@@ -39,6 +39,8 @@ export function makeBet({ gameId, db, io, username, amt }) {
   const currGame = db.data.games[gameId];
   for (let player of currGame.players) {
     if (player.username === username) {
+      // if user makes a bet larger than amount they have, make them go all in
+      // easy way to handle cases where user only has $20 left, and min raise is $50
       if (player.bal < amt) {
         player.amt += player.bal;
         player.totalAmt += player.bal;
