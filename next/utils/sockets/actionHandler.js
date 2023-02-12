@@ -17,14 +17,10 @@ export default (io, socket, db) => {
   };
 
   const call = ({ gameId, username }) => {
-    console.log("got call request from", username);
-
     const betAmt = db.data.games[gameId].bet.amt;
     const oldAmt = db.data.games[gameId].players.find(
       (player) => player.username === username
     ).amt;
-
-    console.log({ betAmt, oldAmt });
 
     makeBet({
       gameId,

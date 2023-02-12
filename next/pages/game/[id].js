@@ -131,6 +131,12 @@ const Game = ({ gameState }) => {
     socket.on("updateBet", (newBet) => {
       setBet(newBet);
     });
+
+    socket.on("tableCard", (card) => {
+      setTable((currTable) => {
+        currTable.push(card);
+      });
+    });
   };
 
   const sendNewUserJoining = async () => {
@@ -207,7 +213,6 @@ const Game = ({ gameState }) => {
   };
 
   const sendCall = () => {
-    // call
     socket.emit("callRequest", { gameId: "default", username });
   };
 
@@ -260,52 +265,63 @@ const Game = ({ gameState }) => {
             ))}
           </div>
 
+          <h2>Table</h2>
           <div className={cardStyles.grid}>
-            {table.map((card) => (
-              <>
-                <div className={`${cardStyles.card} custom-card`}>
-                  <p>{card}</p>
-                </div>
+            {table.map((card) => {
+              // the text displayed on the card
+              const dispCard = card.slice(1) + card[0];
 
-                <style jsx>
-                  {`
-                    .custom-card {
-                      color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                      border-color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                    }
-                  `}
-                </style>
-              </>
-            ))}
+              return (
+                <>
+                  <div className={`${cardStyles.card} custom-card`}>
+                    <p>{dispCard}</p>
+                  </div>
+
+                  <style jsx>
+                    {`
+                      .custom-card {
+                        color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                        border-color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                      }
+                    `}
+                  </style>
+                </>
+              );
+            })}
           </div>
           <h3>Current Pot Size: {currPot}</h3>
           <h2>Total Pot Size: {totalPot}</h2>
 
           <div className={cardStyles.grid}>
-            {hand.map((card) => (
-              <>
-                <div className={`${cardStyles.card} custom-card`}>
-                  <p>{card}</p>
-                </div>
+            {hand.map((card) => {
+              // the text displayed on the card
+              const dispCard = card.slice(1) + card[0];
 
-                <style jsx>
-                  {`
-                    .custom-card {
-                      color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                      border-color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                    }
-                  `}
-                </style>
-              </>
-            ))}
+              return (
+                <>
+                  <div className={`${cardStyles.card} custom-card`}>
+                    <p>{dispCard}</p>
+                  </div>
+
+                  <style jsx>
+                    {`
+                      .custom-card {
+                        color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                        border-color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                      }
+                    `}
+                  </style>
+                </>
+              );
+            })}
           </div>
           <div>
             <button onClick={sendCall}>Call</button>
