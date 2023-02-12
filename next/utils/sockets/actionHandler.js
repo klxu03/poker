@@ -1,7 +1,7 @@
 // Handles an action
 
 import { setCards } from "../card";
-import { startRound } from "../game";
+import { nextTurn, makeBet, updateAction, startRound } from "../game";
 
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (io, socket, db) => {
@@ -16,5 +16,29 @@ export default (io, socket, db) => {
     db.write();
   };
 
+  const call = ({ gameId, username }) => {
+    console.log("got call request from", username);
+
+    const betAmt = db.data.games[gameId].bet.amt;
+    const oldAmt = db.data.games[gameId].players.find(
+      (player) => player.username === username
+    ).amt;
+
+    console.log({ betAmt, oldAmt });
+
+    makeBet({
+      gameId,
+      db,
+      io,
+      username,
+      amt: betAmt - oldAmt,
+    });
+    updateAction({ gameId, db, io, username, action: "Call" });
+
+    nextTurn({ db, io, gameId });
+  };
+
   socket.on("startRequest", start);
+
+  socket.on("callRequest", call);
 };

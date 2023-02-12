@@ -37,7 +37,9 @@ export function createGame() {
 // Username attempting to make a bet of amt
 export function makeBet({ gameId, db, io, username, amt }) {
   const currGame = db.data.games[gameId];
-  for (let player of currGame.players) {
+  for (let i = 0; i < currGame.players.length; i++) {
+    const player = currGame.players[i];
+
     if (player.username === username) {
       // if user makes a bet larger than amount they have, make them go all in
       // easy way to handle cases where user only has $20 left, and min raise is $50
@@ -59,6 +61,17 @@ export function makeBet({ gameId, db, io, username, amt }) {
       }
 
       io.sockets.emit("updateBal", { username, newBal: player.bal });
+
+      // this player made a new bet, not just a call as
+      // new player totalAmt bet this round is > previous bet amt
+      if (player.totalAmt > db.data.games[gameId].bet.amt) {
+        db.data.games[gameId].bet = {
+          user: i,
+          amt: player.totalAmt,
+        };
+
+        io.sockets.emit("updateBet", db.data.games[gameId].bet);
+      }
     }
   }
 
@@ -75,6 +88,21 @@ export function updateAction({ gameId, db, io, username, action }) {
       player.action = action;
     }
   }
+
+  db.write();
+}
+
+export function nextTurn({ db, io, gameId }) {
+  const numPlayers = db.data.games[gameId].players.length;
+  const currGame = db.data.games[gameId];
+
+  currGame.turn++;
+  currGame.turn %= numPlayers;
+
+  io.sockets.emit(
+    "playerTurn",
+    db.data.games[gameId].players[currGame.turn].username
+  );
 
   db.write();
 }
