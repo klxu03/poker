@@ -112,7 +112,17 @@ const Game = ({ gameState }) => {
           }
         }
 
-        return currPlayers;
+        return [...currPlayers];
+      });
+    });
+
+    socket.on("cleanBets", () => {
+      setPlayers((currPlayers) => {
+        for (let player of currPlayers) {
+          player.amt = 0;
+        }
+
+        return [...currPlayers];
       });
     });
 
@@ -134,7 +144,7 @@ const Game = ({ gameState }) => {
 
     socket.on("tableCard", (card) => {
       setTable((currTable) => {
-        currTable.push(card);
+        return [...currTable, card];
       });
     });
   };

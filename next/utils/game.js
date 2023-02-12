@@ -64,10 +64,10 @@ export function makeBet({ gameId, db, io, username, amt }) {
 
       // this player made a new bet, not just a call as
       // new player totalAmt bet this round is > previous bet amt
-      if (player.totalAmt > db.data.games[gameId].bet.amt) {
+      if (player.amt > db.data.games[gameId].bet.amt) {
         db.data.games[gameId].bet = {
           user: i,
-          amt: player.totalAmt,
+          amt: player.amt,
         };
 
         io.sockets.emit("updateBet", db.data.games[gameId].bet);
@@ -92,6 +92,42 @@ export function updateAction({ gameId, db, io, username, action }) {
   db.write();
 }
 
+const nextBetRound = ({ db, io, gameId }) => {
+  const currGame = db.data.games[gameId];
+
+  if (currGame.tableCounter == 0) {
+    for (let i = 0; i < 3; i++) {
+      io.sockets.emit("tableCard", currGame.table[i]);
+    }
+    // here comes the flop
+    currGame.tableCounter = 3;
+  } else if (currGame.tableCounter == 3 || currGame.tableCounter == 4) {
+    // here comes the turn or river
+    io.sockets.emit("tableCard", currGame.table[currGame.tableCounter]);
+    currGame.tableCounter++;
+  } else {
+    // end of round. over show cards ending
+  }
+
+  // reset the bet to whoever has the button
+  const bigBlindIndex = db.data.games[gameId].blind;
+  db.data.games[gameId].bet = {
+    user: bigBlindIndex,
+    amt: 0,
+  };
+  currGame.turn = bigBlindIndex;
+  io.sockets.emit("playerTurn", currGame.players[bigBlindIndex].username);
+
+  // reset everyone's previous round's bet amounts (amt, not totalAmt)
+  io.sockets.emit("cleanBets");
+  currGame.currPot = 0;
+  for (let player of currGame.players) {
+    player.amt = 0;
+  }
+
+  db.write();
+};
+
 export function nextTurn({ db, io, gameId }) {
   const numPlayers = db.data.games[gameId].players.length;
   const currGame = db.data.games[gameId];
@@ -99,10 +135,17 @@ export function nextTurn({ db, io, gameId }) {
   currGame.turn++;
   currGame.turn %= numPlayers;
 
-  io.sockets.emit(
-    "playerTurn",
-    db.data.games[gameId].players[currGame.turn].username
-  );
+  // check if nextTurn is better. If it is, next round
+  if (currGame.turn == currGame.bet.user) {
+    // emit the big blind's turn
+    nextBetRound({ db, io, gameId });
+  } else {
+    // normal person's next turn
+    io.sockets.emit(
+      "playerTurn",
+      db.data.games[gameId].players[currGame.turn].username
+    );
+  }
 
   db.write();
 }
