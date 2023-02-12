@@ -20,7 +20,7 @@ const Game = ({ gameState }) => {
   const [table, setTable] = useState([]);
   const [totalPot, setTotalPot] = useState(0);
   const [currPot, setCurrPot] = useState(0);
-  const [bet, setBet] = useState();
+  const [bet, setBet] = useState({});
 
   const [hand, setHand] = useState([]);
   const [bal, setBal] = useState();
@@ -28,10 +28,12 @@ const Game = ({ gameState }) => {
   const [admin, setAdmin] = useState(false);
   const [started, setStarted] = useState(false); // check if game has started or not
 
+  const [raise, setRaise] = useState();
+
   const colors = {
     Fold: "red",
-    Check: "#0070f3",
-    Call: "gray",
+    Call: "#0070f3",
+    // Check: "gray", // no more concept of a check, just a call
     Raise: "green",
     Pending: "#36454F",
   };
@@ -125,6 +127,10 @@ const Game = ({ gameState }) => {
         return currPlayers;
       });
     });
+
+    socket.on("updateBet", (newBet) => {
+      setBet(newBet);
+    });
   };
 
   const sendNewUserJoining = async () => {
@@ -198,6 +204,19 @@ const Game = ({ gameState }) => {
 
   const sendStartGame = () => {
     socket.emit("startRequest", "default");
+  };
+
+  const sendCall = () => {
+    // call
+    socket.emit("callRequest", { gameId: "default", username });
+  };
+
+  const sendFold = () => {
+    // send fold
+  };
+
+  const sendRaise = () => {
+    // send raise
   };
 
   return (
@@ -289,10 +308,17 @@ const Game = ({ gameState }) => {
             ))}
           </div>
           <div>
-            <button>Call</button>
-            <button>Fold</button>
-            <button>Raise</button>
-            <input type="text"></input>
+            <button onClick={sendCall}>Call</button>
+            <button onClick={sendFold}>Fold</button>
+            <button onClick={sendRaise}>Raise</button>
+            <input
+              type="text"
+              placeholder="Raise Amt"
+              value={raise}
+              onChange={(e) => {
+                setRaise(e.target.value);
+              }}
+            ></input>
 
             <br />
           </div>
