@@ -135,7 +135,9 @@ export default function Home({ initialGames }) {
                 </a>
               </Link>
             ))}
-            {games.length > 0 && (
+          </div>
+          {games.length > 0 && (
+            <>
               <a
                 className={styles.card}
                 onClick={() => {
@@ -144,8 +146,8 @@ export default function Home({ initialGames }) {
               >
                 <h2>Delete Default Game</h2>
               </a>
-            )}
-          </div>
+            </>
+          )}
         </main>
       </div>
     </>

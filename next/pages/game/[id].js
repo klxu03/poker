@@ -334,9 +334,15 @@ const Game = ({ gameState }) => {
             })}
           </div>
           <div>
-            <button onClick={sendCall}>Call</button>
-            <button onClick={sendFold}>Fold</button>
-            <button onClick={sendRaise}>Raise</button>
+            <button onClick={sendCall} disabled={turn !== username}>
+              Call
+            </button>
+            <button onClick={sendFold} disabled={turn !== username}>
+              Fold
+            </button>
+            <button onClick={sendRaise} disabled={turn !== username}>
+              Raise
+            </button>
             <input
               type="text"
               placeholder="Raise Amt"
