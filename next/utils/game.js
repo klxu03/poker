@@ -117,6 +117,7 @@ const nextBetRound = ({ db, io, gameId }) => {
   };
   currGame.turn = bigBlindIndex;
   io.sockets.emit("playerTurn", currGame.players[bigBlindIndex].username);
+  io.sockets.emit("updateBet", db.data.games[gameId].bet);
 
   // reset everyone's previous round's bet amounts (amt, not totalAmt)
   io.sockets.emit("cleanBets");
@@ -134,8 +135,14 @@ export function nextTurn({ db, io, gameId }) {
 
   currGame.turn++;
   currGame.turn %= numPlayers;
+  let nextAction = currGame.players[currGame.turn].action; // the next turn person's action
+  while (nextAction != "Call" && nextAction != "Raise") {
+    currGame.turn++;
+    currGame.turn %= numPlayers;
+    nextAction = currGame.players[currGame.turn].action;
+  }
 
-  // check if nextTurn is better. If it is, next round
+  // check if nextTurn is the better. If it is, next round
   if (currGame.turn == currGame.bet.user) {
     // emit the big blind's turn
     nextBetRound({ db, io, gameId });
@@ -162,7 +169,7 @@ export function startRound({ gameId, io, socket, db }) {
       db,
       io,
       username: player.username,
-      action: "Pending",
+      action: "Call",
     });
   }
 
