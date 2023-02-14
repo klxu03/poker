@@ -28,7 +28,7 @@ const Game = ({ gameState }) => {
   const [admin, setAdmin] = useState(false);
   const [started, setStarted] = useState(false); // check if game has started or not
 
-  const [raise, setRaise] = useState();
+  const [raise, setRaise] = useState("");
 
   const colors = {
     Fold: "red",
@@ -231,6 +231,13 @@ const Game = ({ gameState }) => {
   };
 
   const sendRaise = () => {
+    const oldAmt = players.find((player) => player.username === username).amt;
+
+    if (+raise > bal || +raise <= bet) {
+      setRaise("");
+      return;
+    }
+
     // send raise
   };
 
