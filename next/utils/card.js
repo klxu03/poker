@@ -1,4 +1,4 @@
-// Handles everyting related to cards
+// Handles everything related to cards
 
 // Create the initial pre-shuffled deck
 const createDeck = (cards) => {
@@ -43,9 +43,6 @@ const shuffleCards = (cards) => {
     [cards[rand1], cards[rand2]] = [cards[rand2], cards[rand1]];
   }
 };
-
-const whoWon = () => {};
-// new probability file to handle everything probability related
 
 // Initialize all the cards on the table and to each player
 export function setCards({ gameId, io, db }) {
