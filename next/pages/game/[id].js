@@ -117,6 +117,7 @@ const Game = ({ gameState }) => {
     });
 
     socket.on("cleanBets", () => {
+      console.log("cleanBets received");
       setPlayers((currPlayers) => {
         for (let player of currPlayers) {
           player.amt = 0;
@@ -227,18 +228,19 @@ const Game = ({ gameState }) => {
   };
 
   const sendFold = () => {
-    // send fold
+    socket.emit("foldRequest", { gameId: "default", username });
   };
 
   const sendRaise = () => {
     const oldAmt = players.find((player) => player.username === username).amt;
 
-    if (+raise > bal || +raise <= bet) {
+    if (+raise > bal || +raise + oldAmt <= bet.amt) {
       setRaise("");
       return;
     }
 
-    // send raise
+    socket.emit("raiseRequest", { gameId: "default", username, amt: +raise });
+    setRaise("");
   };
 
   return (
