@@ -6,6 +6,8 @@ const createDeck = (cards) => {
 
   for (let i = 0; i < 52; i++) {
     let card = "";
+    card += suits[Math.floor(i / 13)];
+
     switch (i % 13) {
       case 0:
         card += "K";
@@ -24,7 +26,6 @@ const createDeck = (cards) => {
         break;
     }
 
-    card += suits[Math.floor(i / 13)];
     cards.push(card);
   }
 };

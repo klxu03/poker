@@ -20,7 +20,7 @@ const Game = ({ gameState }) => {
   const [table, setTable] = useState([]);
   const [totalPot, setTotalPot] = useState(0);
   const [currPot, setCurrPot] = useState(0);
-  const [bet, setBet] = useState();
+  const [bet, setBet] = useState({});
 
   const [hand, setHand] = useState([]);
   const [bal, setBal] = useState();
@@ -28,10 +28,12 @@ const Game = ({ gameState }) => {
   const [admin, setAdmin] = useState(false);
   const [started, setStarted] = useState(false); // check if game has started or not
 
+  const [raise, setRaise] = useState("");
+
   const colors = {
     Fold: "red",
-    Check: "#0070f3",
-    Call: "gray",
+    Call: "#0070f3",
+    // Check: "gray", // no more concept of a check, just a call
     Raise: "green",
     Pending: "#36454F",
   };
@@ -110,7 +112,18 @@ const Game = ({ gameState }) => {
           }
         }
 
-        return currPlayers;
+        return [...currPlayers];
+      });
+    });
+
+    socket.on("cleanBets", () => {
+      console.log("cleanBets received");
+      setPlayers((currPlayers) => {
+        for (let player of currPlayers) {
+          player.amt = 0;
+        }
+
+        return [...currPlayers];
       });
     });
 
@@ -123,6 +136,16 @@ const Game = ({ gameState }) => {
         }
 
         return currPlayers;
+      });
+    });
+
+    socket.on("updateBet", (newBet) => {
+      setBet(newBet);
+    });
+
+    socket.on("tableCard", (card) => {
+      setTable((currTable) => {
+        return [...currTable, card];
       });
     });
   };
@@ -200,6 +223,26 @@ const Game = ({ gameState }) => {
     socket.emit("startRequest", "default");
   };
 
+  const sendCall = () => {
+    socket.emit("callRequest", { gameId: "default", username });
+  };
+
+  const sendFold = () => {
+    socket.emit("foldRequest", { gameId: "default", username });
+  };
+
+  const sendRaise = () => {
+    const oldAmt = players.find((player) => player.username === username).amt;
+
+    if (+raise > bal || +raise + oldAmt <= bet.amt) {
+      setRaise("");
+      return;
+    }
+
+    socket.emit("raiseRequest", { gameId: "default", username, amt: +raise });
+    setRaise("");
+  };
+
   return (
     <>
       <div className={gameStyles.container}>
@@ -241,58 +284,82 @@ const Game = ({ gameState }) => {
             ))}
           </div>
 
+          <h2>Table</h2>
           <div className={cardStyles.grid}>
-            {table.map((card) => (
-              <>
-                <div className={`${cardStyles.card} custom-card`}>
-                  <p>{card}</p>
-                </div>
+            {table.map((card) => {
+              // the text displayed on the card
+              const dispCard = card.slice(1) + card[0];
 
-                <style jsx>
-                  {`
-                    .custom-card {
-                      color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                      border-color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                    }
-                  `}
-                </style>
-              </>
-            ))}
+              return (
+                <>
+                  <div className={`${cardStyles.card} custom-card`}>
+                    <p>{dispCard}</p>
+                  </div>
+
+                  <style jsx>
+                    {`
+                      .custom-card {
+                        color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                        border-color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                      }
+                    `}
+                  </style>
+                </>
+              );
+            })}
           </div>
           <h3>Current Pot Size: {currPot}</h3>
           <h2>Total Pot Size: {totalPot}</h2>
 
           <div className={cardStyles.grid}>
-            {hand.map((card) => (
-              <>
-                <div className={`${cardStyles.card} custom-card`}>
-                  <p>{card}</p>
-                </div>
+            {hand.map((card) => {
+              // the text displayed on the card
+              const dispCard = card.slice(1) + card[0];
 
-                <style jsx>
-                  {`
-                    .custom-card {
-                      color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                      border-color: ${card[1] == "♦" || card[1] == "♥"
-                        ? "red"
-                        : "black"};
-                    }
-                  `}
-                </style>
-              </>
-            ))}
+              return (
+                <>
+                  <div className={`${cardStyles.card} custom-card`}>
+                    <p>{dispCard}</p>
+                  </div>
+
+                  <style jsx>
+                    {`
+                      .custom-card {
+                        color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                        border-color: ${card[0] == "♦" || card[0] == "♥"
+                          ? "red"
+                          : "black"};
+                      }
+                    `}
+                  </style>
+                </>
+              );
+            })}
           </div>
           <div>
-            <button>Call</button>
-            <button>Fold</button>
-            <button>Raise</button>
-            <input type="text"></input>
+            <button onClick={sendCall} disabled={turn !== username}>
+              Call
+            </button>
+            <button onClick={sendFold} disabled={turn !== username}>
+              Fold
+            </button>
+            <button onClick={sendRaise} disabled={turn !== username}>
+              Raise
+            </button>
+            <input
+              type="text"
+              placeholder="Raise Amt"
+              value={raise}
+              onChange={(e) => {
+                setRaise(e.target.value);
+              }}
+            ></input>
 
             <br />
           </div>
