@@ -56,7 +56,7 @@ export default function Home({ initialGames }) {
   }, [loaded]);
 
   const createGame = async (gameId) => {
-    await ky.post("/api/games/create");
+    await ky.post("http://localhost:3000/api/games/create");
     router.push(`/game/${gameId}`);
   };
 

@@ -109,6 +109,7 @@ const hasStraightFlush = (cards) => {
   return false;
 };
 
+// returns your best hand array where a[0] is your score, so 0 if 1 high, 2 if pair, and a[1] is the value highest like 3 means 3, or 11 J
 const bestHand = (cards) => {
   // determine someone's best hand
 
@@ -134,11 +135,13 @@ const bestHand = (cards) => {
     return a[1] > b[1] ? -1 : 1;
   });
 
-  // compare straight flush
+  // straight flush
 
   // compare four of a kind
+  // just 4-2 or 4-1-1
 
   // compare full house
+  // edge case of 3-3-1, this is still a full house
 
   // compare flush
 
@@ -155,4 +158,5 @@ const bestHand = (cards) => {
 
 const whoWon = () => {
   // lets go
+  // just take each hand, and then O(n) go through and get a max and currIndex of best hand
 };
