@@ -56,14 +56,14 @@ export default function Home({ initialGames }) {
   }, [loaded]);
 
   const createGame = async (gameId) => {
-    await ky.post("http://localhost:3000/api/games/create");
+    await ky.post("/api/games/create");
     router.push(`/game/${gameId}`);
   };
 
   const deleteGame = async (gameId) => {
     await ky.post("/api/games/delete");
 
-    const res = await ky.get("http://localhost:3000/api/games");
+    const res = await ky.get("/api/games");
     const games = await res.json();
 
     setGames(games);
