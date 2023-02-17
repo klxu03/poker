@@ -260,8 +260,123 @@ const whoWon = (playerCards) => {
       ret = [playerCards[i].username];
     } else if (curr[0] == best[0]) {
       // check tie or higher trips for example
+
+      // second element is just the Number
+      if (curr[0] === 8 || curr[0] === 7 || curr[0] === 5 || curr[0] === 4) {
+        if (best[1] < curr[1]) {
+          best = curr;
+          ret = [playerCards[i].username];
+        } else if (best[1] === curr[1]) {
+          ret.push(playerCards[i].username);
+        }
+      } else {
+        // compare first five cards
+        switch (curr[0]) {
+          case 6:
+            if (
+              best[1][0][0] < curr[1][0][0] ||
+              (best[1][0][0] === curr[1][0][0] && best[1][1][0] < curr[1][1][0])
+            ) {
+              best = curr;
+              ret = [playerCards[i].username];
+            } else if (
+              best[1][0][0] === curr[1][0][0] &&
+              best[1][1][0] === curr[1][1][0]
+            ) {
+              ret.push(playerCards[i].username);
+            }
+            break;
+          case 3:
+            if (
+              best[1][0][0] < curr[1][0][0] ||
+              (best[1][0][0] === curr[1][0][0] &&
+                best[1][1][0] < curr[1][1][0]) ||
+              (best[1][0][0] === curr[1][0][0] &&
+                best[1][1][0] === curr[1][1][0] &&
+                best[1][2][0] === curr[1][2][0])
+            ) {
+              best = curr;
+              ret = [playerCards[i].username];
+            } else if (
+              best[1][0][0] === curr[1][0][0] &&
+              best[1][1][0] === curr[1][1][0] &&
+              best[1][2][0] === curr[1][2][0]
+            ) {
+              ret.push(playerCards[i].username);
+            }
+            break;
+          case 2:
+            // two pair could lead to triple pairs, same two pairs and then a 3rd low pair + high single
+            // but 3rd pair would show instead of the high single
+            if (
+              best[1][0][0] < curr[1][0][0] ||
+              (best[1][0][0] === curr[1][0][0] && best[1][1][0] < curr[1][1][0])
+            ) {
+              best = curr;
+              ret = [playerCards[i].username];
+            }
+
+            if (
+              best[1][0][0] === curr[1][0][0] &&
+              best[1][1][0] === curr[1][1][0]
+            ) {
+              // figure out the 5th best card
+              // in case it's a double then single, best of the single or double
+              // if its just two singles (dub, dub, sing, sing, sing) then you're getting best sing anyways
+              const best_5 = max(best[1][2][0], best[1][3][0]);
+              const curr_5 = max(curr[1][2][0], curr[1][3][0]);
+
+              if (best_5 < curr_5) {
+                best = curr;
+                ret = [playerCards[i].username];
+              } else if (best_5 === curr_5) {
+                ret.push(playerCards[i].username);
+              }
+            }
+            break;
+          case 1:
+            if (best[1][0][0] < curr[1][0][0]) {
+              best = curr;
+              ret = [playerCards[i].username];
+            } else if (best[1][0][0] === curr[1][0][0]) {
+              // [double, single, single, single] are the best 5
+              for (let i = 1; i < 4; i++) {
+                if (best[1][i][0] != curr[1][i][0]) {
+                  if (best[1][i][0] < curr[1][i][0]) {
+                    best = curr;
+                    ret = [playerCards[i].username];
+                  }
+
+                  break;
+                }
+              }
+
+              // if you make it out of the for loop, everything is equal
+              ret.push(playerCards[i].username);
+            }
+            break;
+          case 0:
+            // [single, single, single, single, single] are the best 5
+            for (let i = 0; i < 5; i++) {
+              if (best[1][i][0] != curr[1][i][0]) {
+                if (best[1][i][0] < curr[1][i][0]) {
+                  best = curr;
+                  ret = [playerCards[i].username];
+                }
+
+                break;
+              }
+            }
+
+            // if you make it out of the for loop, everything is equal
+            ret.push(playerCards[i].username);
+            break;
+        }
+      }
     }
   }
+
+  return ret;
 };
 
 const test = () => {
