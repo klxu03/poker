@@ -168,27 +168,29 @@ const bestHand = (cards) => {
   // determine someone's best hand
 
   // Counts the # of each, so if three aces cardAmts["A"] == 3
-  const cardAmts = {};
+  const cardAmts = new Map();
 
   const sortedCards = [...convertCards(cards)].sort(sortCards);
 
   for (let i = 0; i < 7; i++) {
-    if (cardAmts[sortedCards[i].slice(1)] === undefined) {
-      cardAmts[sortedCards[i].slice(1)] = 0;
+    const currVal = Number(sortedCards[i].slice(1));
+    if (cardAmts.get(currVal) === undefined) {
+      cardAmts.set(currVal, 0);
     }
 
-    cardAmts[sortedCards[i].slice(1)]++;
+    cardAmts.set(currVal, cardAmts.get(currVal) + 1);
   }
 
   // Sorted big to small so first is {"14": 2, "5": 2, "11": 1, ...}
-  const sortedCardAmts = Object.entries(cardAmts).sort(function (a, b) {
+  const sortedCardAmts = [...cardAmts].sort(function (a, b) {
     if (a[1] == b[1]) {
-      return Number(a[0]) > Number(b[0]) ? -1 : 1;
+      return a[0] > b[0] ? -1 : 1;
     }
 
     return a[1] > b[1] ? -1 : 1;
   });
   console.log({ sortedCards });
+  console.log({ sortedCardAmts });
 
   let res;
 
@@ -255,6 +257,10 @@ const whoWon = (playerCards) => {
   for (let i = 1; i < playerCards.length; i++) {
     let curr = bestHand(playerCards[i].cards);
 
+    console.log(best[0], curr[0]);
+    console.log("best1:", best[1]);
+    console.log("curr1:", curr[1]);
+
     if (curr[0] > best[0]) {
       best = curr;
       ret = [playerCards[i].username];
@@ -277,6 +283,7 @@ const whoWon = (playerCards) => {
               best[1][0][0] < curr[1][0][0] ||
               (best[1][0][0] === curr[1][0][0] && best[1][1][0] < curr[1][1][0])
             ) {
+              console.log("full house: replace best with curr");
               best = curr;
               ret = [playerCards[i].username];
             } else if (
@@ -381,30 +388,32 @@ const whoWon = (playerCards) => {
 
 const test = () => {
   const suits = "♥♣♦♠";
-  const cards = [
-    suits[0] + "J",
+  const p1 = [
+    suits[2] + "J",
     suits[0] + "10",
     suits[0] + "K",
     suits[0] + "9",
     suits[1] + "9",
     suits[3] + "9",
-    suits[0] + "8",
+    suits[0] + "J",
   ];
 
-  let res = bestHand(cards);
-  console.log("bestHand", { res });
+  const p2 = [
+    suits[0] + "9",
+    suits[1] + "9",
+    suits[2] + "9",
+    suits[0] + "7",
+    suits[1] + "7",
+    suits[3] + "J",
+    suits[0] + "A",
+  ];
 
-  // const straightCards = convertCards([
-  //   cards[0],
-  //   cards[1],
-  //   cards[2],
-  //   cards[3],
-  //   cards[6],
-  // ]).sort(sortCards);
+  let res = whoWon([
+    { username: "p1", cards: p1 },
+    { username: "p2", cards: p2 },
+  ]);
 
-  // console.log({ straightCards });
-  // res = isStraight(straightCards);
-  // console.log("isStraight", { res });
+  console.log({ res });
 };
 
 test();
