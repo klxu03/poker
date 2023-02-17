@@ -245,9 +245,23 @@ const bestHand = (cards) => {
   return [0, sortedCardAmts];
 };
 
-const whoWon = () => {
-  // lets go
+// inp: an array of objects {username: player_username, cards: [7 cards]}
+// out: an array of names of players who won. 1 if just one winner, multiple if ties
+const whoWon = (playerCards) => {
+  let ret = [playerCards[0].username];
+
+  let best = bestHand(playerCards[0].cards);
   // just take each hand, and then O(n) go through and get a max and currIndex of best hand
+  for (let i = 1; i < playerCards.length; i++) {
+    let curr = bestHand(playerCards[i].cards);
+
+    if (curr[0] > best[0]) {
+      best = curr;
+      ret = [playerCards[i].username];
+    } else if (curr[0] == best[0]) {
+      // check tie or higher trips for example
+    }
+  }
 };
 
 const test = () => {
