@@ -27,21 +27,29 @@ const cardLetterToValue = {
     "A": 14
 }
 
+// convert "A" to 14 and stuff
+const convertCards = (cards) => {
+  const ret = [];
+  for (card of cards) {
+    let val = card.slice(1);
+    if (val in cardLetterToValue) {
+      val = "" + cardLetterToValue[curr];
+    }
+    ret.push(card[0] + val);
+  }
+
+  return ret;
+};
+
 // assume cards are sorted
 const isStraight = (cards) => {
   let curr = cards[0].slice(1);
-  if (curr in cardLetterToValue) {
-    curr = cardLetterToValue[curr];
-  }
   curr = Number(curr);
 
   let valid = true;
   const A2345 = [0, 0, 0, 0, 0]; // card amounts, so A2345[2] == 2 means two 3s
   for (let i = 1; i < 5; i++) {
     let next = cards[i].slice(1);
-    if (next in cardLetterToValue) {
-      next = cardLetterToValue[next];
-    }
     next = Number(next);
 
     if (next != curr + 1) {
@@ -80,14 +88,6 @@ const isFlush = (cards) => {
   return true;
 };
 
-const sortCards = (a, b) => {
-  if (Number(a.slice(1)) == Number(b.slice(1))) {
-    return a[0] < b[0] ? -1 : 1;
-  }
-
-  return Number(a.slice(1)) < Number(b.slice(1)) ? -1 : 1;
-};
-
 // returns false if no straight flush, otherwise return the highest card representing
 // assume input of cards is sorted
 const hasStraightFlush = (cards) => {
@@ -109,6 +109,15 @@ const hasStraightFlush = (cards) => {
   return false;
 };
 
+// custom comparator to sort the cards in ascending order
+const sortCards = (a, b) => {
+  if (Number(a.slice(1)) == Number(b.slice(1))) {
+    return a[0] < b[0] ? -1 : 1;
+  }
+
+  return Number(a.slice(1)) < Number(b.slice(1)) ? -1 : 1;
+};
+
 // returns your best hand array where a[0] is your score, so 0 if 1 high, 2 if pair, and a[1] is the value highest like 3 means 3, or 11 J
 const bestHand = (cards) => {
   // determine someone's best hand
@@ -116,20 +125,20 @@ const bestHand = (cards) => {
   // Counts the # of each, so if three aces cardAmts["A"] == 3
   const cardAmts = {};
 
-  const sortedCards = [...cards].sort(sortCards);
+  const sortedCards = [...convertCards(cards)].sort(sortCards);
 
   for (let i = 0; i < 7; i++) {
-    if (cardAmts[sortedCards[i]] === undefined) {
-      cardAmts[sortedCards[i]] = 0;
+    if (cardAmts[sortedCards[i].slice(1)] === undefined) {
+      cardAmts[sortedCards[i].slice(1)] = 0;
     }
 
-    cardAmts[sortedCards[i]]++;
+    cardAmts[sortedCards[i].slice(1)]++;
   }
 
-  // Sorted big to small so first is {"A": 2, "5": 2, "J": 1, ...}
+  // Sorted big to small so first is {"14": 2, "5": 2, "11": 1, ...}
   const sortedCardAmts = Object.entries(cardAmts).sort(function (a, b) {
     if (a[1] == b[1]) {
-      return a[0] > b[0] ? -1 : 1;
+      return Number(a[0]) > Number(b[0]) ? -1 : 1;
     }
 
     return a[1] > b[1] ? -1 : 1;
@@ -141,9 +150,11 @@ const bestHand = (cards) => {
   res = hasStraightFlush(cards);
 
   if (res !== false) {
+    return [8, res];
   }
 
   // compare four of a kind - 7
+  if (sortedCardAmts)
   // just 4-2 or 4-1-1
 
   // compare full house - 6
