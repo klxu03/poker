@@ -33,7 +33,7 @@ const convertCards = (cards) => {
   for (card of cards) {
     let val = card.slice(1);
     if (val in cardLetterToValue) {
-      val = "" + cardLetterToValue[curr];
+      val = "" + cardLetterToValue[val];
     }
     ret.push(card[0] + val);
   }
@@ -77,7 +77,28 @@ const isStraight = (cards) => {
   return true;
 };
 
-// assume cards are sorted
+// assume input of 7 cards is sorted
+const hasStraight = (cards) => {
+  let permutation = nextPermutation(0);
+
+  while (permutation !== false) {
+    let currCards = [];
+    for (let i = 0; i < 7; i++) {
+      if (permutation & (1 << i)) currCards.push(cards[cards.length - 1 - i]);
+    }
+    currCards.reverse();
+
+    if (isStraight(currCards)) {
+      return currCards[4];
+    }
+
+    permutation = nextPermutation(permutation);
+  }
+
+  return false;
+};
+
+// assume the 5 cards are sorted
 const isFlush = (cards) => {
   for (let i = 1; i < 5; i++) {
     if (cards[i][0] != cards[0][0]) {
@@ -88,8 +109,29 @@ const isFlush = (cards) => {
   return true;
 };
 
+// assume input of 7 cards is sorted
+const hasFlush = (cards) => {
+  let permutation = nextPermutation(0);
+
+  while (permutation !== false) {
+    let currCards = [];
+    for (let i = 0; i < 7; i++) {
+      if (permutation & (1 << i)) currCards.push(cards[cards.length - 1 - i]);
+    }
+    currCards.reverse();
+
+    if (isFlush(currCards)) {
+      return currCards[4];
+    }
+
+    permutation = nextPermutation(permutation);
+  }
+
+  return false;
+};
+
 // returns false if no straight flush, otherwise return the highest card representing
-// assume input of cards is sorted
+// assume the input of 7 cards is sorted
 const hasStraightFlush = (cards) => {
   let permutation = nextPermutation(0);
 
@@ -98,6 +140,7 @@ const hasStraightFlush = (cards) => {
     for (let i = 0; i < 7; i++) {
       if (permutation & (1 << i)) currCards.push(cards[cards.length - 1 - i]);
     }
+    currCards.reverse();
 
     if (isStraight(currCards) && isFlush(currCards)) {
       return currCards[4];
@@ -118,7 +161,9 @@ const sortCards = (a, b) => {
   return Number(a.slice(1)) < Number(b.slice(1)) ? -1 : 1;
 };
 
-// returns your best hand array where a[0] is your score, so 0 if 1 high, 2 if pair, and a[1] is the value highest like 3 means 3, or 11 J
+// returns your best hand array where a[0] is your score, so 0 if 1 high, 2 if pair, and
+// a[1] is the value highest like 3 means 3, or 11 J if your score is triple and above, otherwise
+// there may duplicate like pairs or high cards, thus the entirety of sortedCardAmts will be returned
 const bestHand = (cards) => {
   // determine someone's best hand
 
@@ -143,35 +188,61 @@ const bestHand = (cards) => {
 
     return a[1] > b[1] ? -1 : 1;
   });
-  console.log({ sortedCardAmts });
+  console.log({ sortedCards });
 
   let res;
 
   // straight flush - 8
-  res = hasStraightFlush(cards);
+  res = hasStraightFlush(sortedCards);
 
   if (res !== false) {
     return [8, Number(res.slice(1))];
   }
 
   // compare four of a kind - 7
-
-  //
+  if (sortedCardAmts[0][1] >= 4) {
+    return [7, Number(sortedCardAmts[0][0])];
+  }
 
   // compare full house - 6
   // edge case of 3-3-1, this is still a full house
+  if (sortedCardAmts[0][1] >= 3 && sortedCardAmts[1][1] >= 2) {
+    return [6, Number(sortedCardAmts[0][0])];
+  }
 
   // compare flush - 5
+  res = hasFlush(sortedCards);
+
+  if (res !== false) {
+    return [5, Number(res.slice(1))];
+  }
 
   // compare straight - 4
+  res = hasStraight(sortedCards);
+
+  if (res !== false) {
+    return [4, Number(res.slice(1))];
+  }
 
   // compare three of a kind - 3
+  if (sortedCardAmts[0][1] >= 3) {
+    return [3, Number(sortedCardAmts[0][0])];
+  }
 
-  /// compare two pair - 2
+  /* this and beyond you might tie your top pair for example, like both pair of 10 and it goes to next best card */
+  /* thus, I will be returning sortedCardAmts */
+  // compare two pair - 2
+  if (sortedCardAmts[0][1] >= 2 && sortedCardAmts[1][1] <= 2) {
+    return [2, sortedCardAmts];
+  }
 
   // compare pair - 1
+  if (sortedCardAmts[0][1] >= 2) {
+    return [1, sortedCardAmts];
+  }
 
   // compare high card - 0
+  return [0, sortedCardAmts];
 };
 
 const whoWon = () => {
@@ -184,14 +255,27 @@ const test = () => {
   const cards = [
     suits[0] + "J",
     suits[0] + "10",
-    suits[0] + "Q",
+    suits[0] + "K",
     suits[0] + "9",
     suits[1] + "9",
     suits[3] + "9",
     suits[0] + "8",
   ];
 
-  bestHand(cards);
+  let res = bestHand(cards);
+  console.log("bestHand", { res });
+
+  // const straightCards = convertCards([
+  //   cards[0],
+  //   cards[1],
+  //   cards[2],
+  //   cards[3],
+  //   cards[6],
+  // ]).sort(sortCards);
+
+  // console.log({ straightCards });
+  // res = isStraight(straightCards);
+  // console.log("isStraight", { res });
 };
 
 test();
