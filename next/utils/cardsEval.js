@@ -386,6 +386,7 @@ const whoWon = (playerCards) => {
   return ret;
 };
 
+/* 
 const test = () => {
   const suits = "♥♣♦♠";
   const p1 = [
@@ -417,3 +418,4 @@ const test = () => {
 };
 
 test();
+*/
