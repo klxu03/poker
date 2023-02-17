@@ -134,6 +134,7 @@ const bestHand = (cards) => {
 
     return a[1] > b[1] ? -1 : 1;
   });
+  console.log({ sortedCardAmts });
 
   let res;
 
@@ -141,10 +142,10 @@ const bestHand = (cards) => {
   res = hasStraightFlush(cards);
 
   if (res !== false) {
+    return [8, Number(res.slice(1))];
   }
 
   // compare four of a kind - 7
-  // just 4-2 or 4-1-1
 
   // compare full house - 6
   // edge case of 3-3-1, this is still a full house
@@ -166,3 +167,20 @@ const whoWon = () => {
   // lets go
   // just take each hand, and then O(n) go through and get a max and currIndex of best hand
 };
+
+const test = () => {
+  const suits = "♥♣♦♠";
+  const cards = [
+    suits[0] + "J",
+    suits[0] + "10",
+    suits[0] + "Q",
+    suits[0] + "9",
+    suits[1] + "9",
+    suits[3] + "9",
+    suits[0] + "8",
+  ];
+
+  bestHand(cards);
+};
+
+test();
