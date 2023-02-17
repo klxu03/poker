@@ -207,7 +207,7 @@ const bestHand = (cards) => {
   // compare full house - 6
   // edge case of 3-3-1, this is still a full house
   if (sortedCardAmts[0][1] >= 3 && sortedCardAmts[1][1] >= 2) {
-    return [6, Number(sortedCardAmts[0][0])];
+    return [6, sortedCardAmts];
   }
 
   // compare flush - 5
@@ -224,13 +224,13 @@ const bestHand = (cards) => {
     return [4, Number(res.slice(1))];
   }
 
-  // compare three of a kind - 3
-  if (sortedCardAmts[0][1] >= 3) {
-    return [3, Number(sortedCardAmts[0][0])];
-  }
-
   /* this and beyond you might tie your top pair for example, like both pair of 10 and it goes to next best card */
   /* thus, I will be returning sortedCardAmts */
+  // compare three of a kind - 3
+  if (sortedCardAmts[0][1] >= 3) {
+    return [3, sortedCardAmts];
+  }
+
   // compare two pair - 2
   if (sortedCardAmts[0][1] >= 2 && sortedCardAmts[1][1] <= 2) {
     return [2, sortedCardAmts];
