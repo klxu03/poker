@@ -135,25 +135,31 @@ const bestHand = (cards) => {
     return a[1] > b[1] ? -1 : 1;
   });
 
-  // straight flush
+  let res;
 
-  // compare four of a kind
+  // straight flush - 8
+  res = hasStraightFlush(cards);
+
+  if (res !== false) {
+  }
+
+  // compare four of a kind - 7
   // just 4-2 or 4-1-1
 
-  // compare full house
+  // compare full house - 6
   // edge case of 3-3-1, this is still a full house
 
-  // compare flush
+  // compare flush - 5
 
-  // compare straight
+  // compare straight - 4
 
-  // compare three of a kind
+  // compare three of a kind - 3
 
-  /// compare two pair
+  /// compare two pair - 2
 
-  // compare pair
+  // compare pair - 1
 
-  // compare high card
+  // compare high card - 0
 };
 
 const whoWon = () => {
