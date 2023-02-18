@@ -347,36 +347,46 @@ const whoWon = (playerCards) => {
               ret = [playerCards[i].username];
             } else if (best[1][0][0] === curr[1][0][0]) {
               // [double, single, single, single] are the best 5
+              let tie = true;
               for (let i = 1; i < 4; i++) {
                 if (best[1][i][0] != curr[1][i][0]) {
                   if (best[1][i][0] < curr[1][i][0]) {
                     best = curr;
                     ret = [playerCards[i].username];
+                  } else {
+                    tie = false;
                   }
 
                   break;
                 }
               }
 
-              // if you make it out of the for loop, everything is equal
-              ret.push(playerCards[i].username);
+              if (tie) {
+                // if you make it out of the for loop, everything is equal
+                ret.push(playerCards[i].username);
+              }
             }
             break;
           case 0:
             // [single, single, single, single, single] are the best 5
+            let tie = true;
             for (let i = 0; i < 5; i++) {
               if (best[1][i][0] != curr[1][i][0]) {
                 if (best[1][i][0] < curr[1][i][0]) {
                   best = curr;
                   ret = [playerCards[i].username];
+                } else {
+                  tie = false;
                 }
 
                 break;
               }
             }
 
-            // if you make it out of the for loop, everything is equal
-            ret.push(playerCards[i].username);
+            if (tie) {
+              // if you make it out of the for loop, everything is equal
+              ret.push(playerCards[i].username);
+            }
             break;
         }
       }
@@ -386,7 +396,7 @@ const whoWon = (playerCards) => {
   return ret;
 };
 
-/* 
+/*
 const test = () => {
   const suits = "♥♣♦♠";
   const p1 = [
