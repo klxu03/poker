@@ -91,7 +91,7 @@ export default function Home({ initialGames }) {
             <input
               type="text"
               placeholder="Username"
-              value={username}
+              value={username ?? ''}
               onChange={(e) => {
                 setUsername(e.target.value);
               }}
